@@ -1,6 +1,34 @@
+import axios from "axios";
 import { Code2 } from "lucide-react";
+import { useState } from "react";
+import { useDispatch } from "react-redux";
+import { addUser } from "../context/userSlice";
+import { useNavigate } from "react-router-dom";
+import { BASE_URL } from "../utils/constants";
 
 function Login() {
+  const [email, setEmail] = useState("niraj@gmail.com");
+  const [password, setPassword] = useState("Niraj@123");
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const handleLogin = async () => {
+    try {
+      const res = await axios.post(
+        BASE_URL + "/auth/login",
+        {
+          email,
+          password,
+        },
+        { withCredentials: true }
+      );
+      dispatch(addUser(res.data.user));
+      return navigate("/feed");
+    } catch (err) {
+      console.error("Login error: ", err);
+    }
+  };
+
   return (
     <div className="min-h-[calc(100vh-140px)] flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-md bg-slate-800 p-8 rounded-2xl shadow-2xl border border-slate-700">
@@ -17,6 +45,8 @@ function Login() {
             </label>
             <input
               type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               placeholder="dev@example.com"
               className="bg-slate-900 border border-slate-700 rounded-lg p-3 text-white focus:ring-2 focus:ring-pink-500 outline-none"
             />
@@ -27,6 +57,8 @@ function Login() {
             </label>
             <input
               type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
               className="bg-slate-900 border border-slate-700 rounded-lg p-3 text-white focus:ring-2 focus:ring-pink-500 outline-none"
             />
@@ -34,7 +66,8 @@ function Login() {
 
           <button
             type="button"
-            className="w-full py-3 bg-gradient-to-r from-pink-600 to-purple-600 text-white font-bold rounded-lg hover:opacity-90 transition-opacity shadow-lg shadow-pink-500/25"
+            onClick={handleLogin}
+            className="w-full py-3 bg-gradient-to-r from-pink-600 to-purple-600 text-white font-bold rounded-lg hover:cursor-pointer hover:opacity-90 transition-opacity shadow-lg shadow-pink-500/25"
           >
             Login
           </button>

@@ -6,8 +6,11 @@ import {
   Settings,
   Flame,
 } from "lucide-react";
+import { useSelector } from "react-redux";
 
 function Navbar() {
+  const user = useSelector((store) => store.user);
+
   return (
     <nav className="bg-slate-900 border-b border-slate-800 sticky top-0 z-50 shadow-lg">
       <div className="mx-auto px-4 sm:px-6 lg:px-8">
@@ -36,19 +39,21 @@ function Navbar() {
             </div>
 
             {/* User Profile Menu */}
-            <div className="ml-4 flex items-center space-x-2">
-              <div className="flex items-center space-x-2 text-slate-300 hover:text-white cursor-pointer">
-                <img
-                  className="h-8 w-8 rounded-full border-2 border-pink-500 object-cover"
-                  src="https://images.unsplash.com/photo-1599566150163-29194dcaad36?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
-                  alt="Profile"
-                />
-                <span className="text-sm font-medium">Alex</span>
+            {user && (
+              <div className="ml-4 flex items-center space-x-2">
+                <div className="flex items-center space-x-2 text-slate-300 hover:text-white cursor-pointer">
+                  <img
+                    className="h-8 w-8 rounded-full border-2 border-pink-500 object-cover"
+                    src={user.avatar}
+                    alt={`profile picture of ${user.name}`}
+                  />
+                  <span className="text-sm font-medium">{user.name.split(" ")[0]}</span>
+                </div>
+                <button className="p-2 text-slate-400 hover:text-red-500 transition-colors hover:cursor-pointer">
+                  <LogOut size={20} />
+                </button>
               </div>
-              <button className="p-2 text-slate-400 hover:text-red-500 transition-colors">
-                <LogOut size={20} />
-              </button>
-            </div>
+            )}
           </div>
 
           {/* Mobile Menu Icon */}
