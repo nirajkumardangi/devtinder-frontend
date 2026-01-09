@@ -1,43 +1,93 @@
+import {
+  Code2,
+  User,
+  MessageSquare,
+  LogOut,
+  Settings,
+  Flame,
+} from "lucide-react";
+
 function Navbar() {
   return (
-    <div className="navbar bg-base-100 shadow-sm">
-      <div className="flex-1">
-        <a className="btn btn-ghost text-xl">DevTnder</a>
-      </div>
-      <div className="flex-none mx-5">
-        <div className="dropdown dropdown-end">
-          <div
-            tabIndex={0}
-            role="button"
-            className="btn btn-ghost btn-circle avatar"
-          >
-            <div className="w-10 rounded-full">
-              <img
-                alt="Tailwind CSS Navbar component"
-                src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
-              />
+    <nav className="bg-slate-900 border-b border-slate-800 sticky top-0 z-50 shadow-lg">
+      <div className="mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between h-16">
+          {/* Logo */}
+          <div className="flex items-center cursor-pointer">
+            <Code2 className="h-8 w-8 text-pink-500 mr-2" />
+            <span className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-pink-500 to-purple-500">
+              DevTinder
+            </span>
+          </div>
+
+          {/* Desktop Nav Items */}
+          <div className="hidden md:flex items-center space-x-4">
+            <div className="flex items-center space-x-1 px-3 py-2 rounded-md text-pink-500 bg-slate-800">
+              <Flame size={20} />
+              <span>Feed</span>
+            </div>
+            <div className="flex items-center space-x-1 px-3 py-2 rounded-md text-slate-400 hover:text-white hover:bg-slate-800 transition-all cursor-pointer">
+              <MessageSquare size={20} />
+              <span>Connections</span>
+            </div>
+            <div className="flex items-center space-x-1 px-3 py-2 rounded-md text-slate-400 hover:text-white hover:bg-slate-800 transition-all cursor-pointer">
+              <User size={20} />
+              <span>Requests</span>
+            </div>
+
+            {/* User Profile Menu */}
+            <div className="ml-4 flex items-center space-x-2">
+              <div className="flex items-center space-x-2 text-slate-300 hover:text-white cursor-pointer">
+                <img
+                  className="h-8 w-8 rounded-full border-2 border-pink-500 object-cover"
+                  src="https://images.unsplash.com/photo-1599566150163-29194dcaad36?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                  alt="Profile"
+                />
+                <span className="text-sm font-medium">Alex</span>
+              </div>
+              <button className="p-2 text-slate-400 hover:text-red-500 transition-colors">
+                <LogOut size={20} />
+              </button>
             </div>
           </div>
-          <ul
-            tabIndex="-1"
-            className="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow"
-          >
-            <li>
-              <a className="justify-between">
-                Profile
-                <span className="badge">New</span>
-              </a>
-            </li>
-            <li>
-              <a>Settings</a>
-            </li>
-            <li>
-              <a>Logout</a>
-            </li>
-          </ul>
+
+          {/* Mobile Menu Icon */}
+          <div className="md:hidden flex items-center">
+            <button className="text-slate-300">
+              <svg
+                className="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4 6h16M4 12h16M4 18h16"
+                />
+              </svg>
+            </button>
+          </div>
         </div>
       </div>
-    </div>
+
+      {/* Mobile Bottom Navigation (Static View) */}
+      <div className="md:hidden fixed bottom-0 w-full bg-slate-900 border-t border-slate-800 flex justify-around py-3 z-50">
+        <button className="text-pink-500 p-2">
+          <Flame size={24} />
+        </button>
+        <button className="text-slate-500 p-2">
+          <MessageSquare size={24} />
+        </button>
+        <button className="text-slate-500 p-2">
+          <User size={24} />
+        </button>
+        <button className="text-slate-500 p-2">
+          <Settings size={24} />
+        </button>
+      </div>
+    </nav>
   );
 }
 
