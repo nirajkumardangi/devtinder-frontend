@@ -1,5 +1,5 @@
-import MarqueeColumn from "../components/MarqueeColumn";
-import { DEV_PROFILES } from "../utils/devProfileData";
+import MarqueeColumn from "./MarqueeColumn";
+import { DEV_PROFILES } from "../../utils/devProfileData";
 
 function BackgroundGrid() {
   return (

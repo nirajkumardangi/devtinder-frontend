@@ -1,4 +1,4 @@
-import BackgroundGrid from "../components/BackgroundGrid";
+import BackgroundGrid from "../components/profile/BackgroundGrid";
 import { Link } from "react-router-dom";
 
 function Home() {
