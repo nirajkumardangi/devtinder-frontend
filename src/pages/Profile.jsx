@@ -64,7 +64,7 @@ function Profile() {
               </div>
             </div>
             {/* Sidebar Details */}
-            <div className="col-span-1 bg-slate-900/50 p-6 rounded-xl border border-slate-700 h-fit">
+            <div className="col-span-1 bg-slate-900/50 p-6 rounded-xl border border-slate-700 h-fit w-full">
               <h3 className="text-slate-400 text-sm uppercase tracking-wider font-semibold mb-4">
                 Details
               </h3>

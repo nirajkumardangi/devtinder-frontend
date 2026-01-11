@@ -6,25 +6,24 @@ import Request from "./pages/Requests";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Layout from "./components/Layout";
-import { Provider } from "react-redux";
-import appStore from "./context/appStore";
+import { useSelector } from "react-redux";
 
 function App() {
+  const user = useSelector((store) => store.user);
+
   return (
-    <Provider store={appStore}>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Layout />}>
-            <Route index element={<Home />} />
-            <Route path="/feed" element={<Feed />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="/connections" element={<Connections />} />
-            <Route path="/requests" element={<Request />} />
-          </Route>
-        </Routes>
-      </BrowserRouter>
-    </Provider>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Layout />}>
+          <Route index element={!user ? <Home /> : <Feed />} />
+          <Route path="feed" element={<Feed />} />
+          <Route path="login" element={<Login />} />
+          <Route path="profile" element={<Profile />} />
+          <Route path="connections" element={<Connections />} />
+          <Route path="requests" element={<Request />} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
   );
 }
 
