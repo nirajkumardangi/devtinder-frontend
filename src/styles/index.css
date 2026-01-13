@@ -16,11 +16,24 @@
     transform: translateY(0);
   }
 }
+@keyframes fade {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 .animate-marquee {
   animation: marquee linear infinite;
 }
 .animate-marquee-reverse {
   animation: marquee-reverse linear infinite;
+}
+.animate-fade {
+  animation: fade 0.2s ease-out;
 }
 .bg-radial-gradient {
   background-image: radial-gradient(
@@ -29,3 +42,4 @@
     #020617 100%
   );
 }
+

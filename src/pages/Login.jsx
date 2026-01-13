@@ -9,6 +9,7 @@ import { BASE_URL } from "../utils/constants";
 function Login() {
   const [email, setEmail] = useState("niraj@gmail.com");
   const [password, setPassword] = useState("Niraj@123");
+  const [error, setError] = useState("");
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -25,6 +26,7 @@ function Login() {
       dispatch(addUser(res.data.user));
       return navigate("/feed");
     } catch (err) {
+      setError(err?.response?.data?.message || "Something went wrong!");
       console.error("Login error: ", err);
     }
   };
@@ -45,6 +47,7 @@ function Login() {
             </label>
             <input
               type="email"
+              required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="dev@example.com"
@@ -57,12 +60,19 @@ function Login() {
             </label>
             <input
               type="password"
+              required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
               className="bg-slate-900 border border-slate-700 rounded-lg p-3 text-white focus:ring-2 focus:ring-pink-500 outline-none"
             />
           </div>
+
+          {error && (
+            <div className="p-3 animate-fade rounded-lg bg-red-500/10 border border-red-500/30 text-red-400 text-sm">
+              {error}
+            </div>
+          )}
 
           <button
             type="button"

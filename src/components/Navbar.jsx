@@ -1,3 +1,4 @@
+import axios from "axios";
 import {
   Code2,
   User,
@@ -7,8 +8,10 @@ import {
   Flame,
   Menu,
 } from "lucide-react";
-import { useSelector } from "react-redux";
-import { Link, useLocation } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { BASE_URL } from "../utils/constants";
+import { removeUser } from "../context/userSlice";
 
 const navStyles = {
   desktop: {
@@ -27,9 +30,25 @@ const navStyles = {
 
 function Navbar() {
   const location = useLocation();
-  const user = useSelector((store) => store.user);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { data: userData } = useSelector((store) => store.user);
 
   const isActive = (path) => location.pathname === path;
+
+  const handleLogout = async () => {
+    try {
+      await axios.post(
+        BASE_URL + "/auth/logout",
+        {},
+        { withCredentials: true }
+      );
+      dispatch(removeUser());
+      navigate("/");
+    } catch (err) {
+      console.err("Logout Error: Somthing went wrong!", err);
+    }
+  };
 
   return (
     <>
@@ -48,14 +67,14 @@ function Navbar() {
             </Link>
 
             {/* Desktop Navigation */}
-            {user ? (
+            {userData ? (
               <div className="hidden md:flex items-center space-x-6">
                 {/* Desktop Nav Links */}
                 <div className="flex items-center space-x-2">
                   <Link to="/feed">
                     <div
                       className={
-                        isActive("/feed")
+                        isActive("/feed") || isActive("/")
                           ? navStyles.desktop.active
                           : navStyles.desktop.inactive
                       }
@@ -99,18 +118,21 @@ function Navbar() {
                       <img
                         className="h-9 w-9 rounded-full border-2 border-pink-500 object-cover group-hover:scale-105 transition-transform"
                         src={
-                          user?.avatar ||
+                          userData?.avatar ||
                           "https://geographyandyou.com/images/user-profile.png"
                         }
-                        alt={user?.name}
+                        alt={userData?.name}
                       />
                       <span className="text-sm font-medium text-slate-200 group-hover:text-white transition-colors">
-                        {user?.name?.split(" ")[0]}
+                        {userData?.name?.split(" ")[0]}
                       </span>
                     </div>
                   </Link>
 
-                  <button className="p-2 text-slate-400 hover:text-red-400 hover:bg-red-400/10 rounded-full transition-all cursor-pointer">
+                  <button
+                    onClick={handleLogout}
+                    className="p-2 text-slate-400 hover:text-red-400 hover:bg-red-400/10 rounded-full transition-all cursor-pointer"
+                  >
                     <LogOut size={20} />
                   </button>
                 </div>
@@ -127,7 +149,7 @@ function Navbar() {
 
             {/* Mobile Menu */}
             <div className="md:hidden flex items-center gap-4">
-              {!user && (
+              {!userData && (
                 <Link to="/login">
                   <button className="px-4 py-2 bg-gradient-to-r from-pink-600 to-purple-600 text-white rounded-full font-bold text-xs">
                     Login
@@ -143,7 +165,7 @@ function Navbar() {
       </nav>
 
       {/* Mobile Bottom Navigation */}
-      {user && (
+      {userData && (
         <div className="md:hidden fixed bottom-0 w-full bg-slate-900/90 backdrop-blur-lg border-t border-white/10 pb-safe z-50">
           <div className="flex justify-around items-center h-16 px-2">
             <Link to="/feed">

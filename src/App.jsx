@@ -15,7 +15,7 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Layout />}>
-          <Route index element={!user ? <Home /> : <Feed />} />
+          <Route index element={!user.data ? <Home /> : <Feed />} />
           <Route path="feed" element={<Feed />} />
           <Route path="login" element={<Login />} />
           <Route path="profile" element={<Profile />} />
