@@ -4,25 +4,25 @@ import { useDispatch, useSelector } from "react-redux";
 import { Outlet, useNavigate } from "react-router-dom";
 import Footer from "../components/Footer";
 import Navbar from "../components/Navbar";
-import { addUser, setChecked } from "../context/userSlice";
+import { addUser, setChecked } from "../features/userSlice";
 import { BASE_URL } from "../utils/constants";
 
 function Layout() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const user = useSelector((store) => store.user);
+  const { checked } = useSelector((store) => store.user);
 
   // Fetch user profile data
   useEffect(() => {
     // Check if user already login so not make an api call
-    if (user.checked) return;
+    if (checked) return;
 
     const fetchUser = async () => {
       try {
         const res = await axios.get(BASE_URL + "/profile", {
           withCredentials: true,
         });
-        dispatch(addUser(res.data.data));
+        dispatch(addUser(res.data.user));
       } catch (err) {
         dispatch(setChecked());
         if (err.response?.status === 401) navigate("/");
@@ -30,7 +30,7 @@ function Layout() {
     };
 
     fetchUser();
-  }, [user.checked]);
+  }, [checked]);
 
   return (
     <div className="flex flex-col min-h-screen">

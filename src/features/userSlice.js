@@ -2,17 +2,17 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const userSlice = createSlice({
   name: "user",
-  initialState: { data: null, checked: false },
+  initialState: { user: null, checked: false },
   reducers: {
     addUser: (state, action) => {
-      state.data = action.payload;
+      state.user = action.payload;
       state.checked = true;
     },
     setChecked: (state) => {
       state.checked = true;
     },
     removeUser: (state) => {
-      state.data = null;
+      state.user = null;
       state.checked = true;
     },
   },

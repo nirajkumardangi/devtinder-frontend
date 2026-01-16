@@ -1,56 +1,88 @@
-import { MessageSquare } from "lucide-react";
+import axios from "axios";
+import { useEffect, useState } from "react";
+import { Search, Filter } from "lucide-react";
+import { useDispatch, useSelector } from "react-redux";
+import { toast } from "react-toastify";
+import ConnectionCard from "./ConnectionCard";
+import { BASE_URL } from "../utils/constants";
+import { addConnections } from "../features/connectionSlice";
 
 function Connections() {
+  const dispatch = useDispatch();
+  const data = useSelector((s) => s.connection);
+
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const filteredConnections = data.filter((data) =>
+    data.name.toLowerCase().includes(searchTerm.toLowerCase()),
+  );
+
+  useEffect(() => {
+    const fetchConnections = async () => {
+      try {
+        const res = await axios.get(BASE_URL + "/users/connections", {
+          withCredentials: true,
+        });
+
+        dispatch(addConnections(res?.data?.data));
+      } catch (error) {
+        toast.error(error.response.data);
+        console.error("Connection Error", error);
+      }
+    };
+
+    fetchConnections();
+  }, []);
+
   return (
-    <div className="max-w-4xl mx-auto py-8 px-4">
-      <h2 className="text-2xl font-bold text-pink-500 mb-6 flex items-center">
-        <MessageSquare className="mr-3 text-pink-500" /> Your Connections
-      </h2>
-      <div className="grid gap-4">
-        {/* Connection Item 1 */}
-        <div className="bg-slate-800 p-4 rounded-xl flex items-center justify-between border border-slate-700 hover:border-slate-600 transition-colors">
-          <div className="flex items-center space-x-4">
+    <div className="min-h-screen py-8 px-4 bg-gray-900 text-white font-sans">
+      <div className="max-w-6xl mx-auto">
+        {/* --- Header & Controls --- */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
+          <div>
+            <h1 className="text-3xl font-bold mb-1">Your Connections</h1>
+            <p className="text-gray-400">Developers you've matched with</p>
+          </div>
+
+          <div className="flex flex-col sm:flex-row gap-3">
             <div className="relative">
-              <img
-                src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
-                alt="Priya"
-                className="w-16 h-16 rounded-full object-cover border-2 border-green-500"
+              <input
+                type="text"
+                placeholder="Search connections..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full sm:w-64 pl-10 pr-4 py-2.5 bg-gray-800 border border-gray-700 rounded-xl focus:outline-none focus:border-purple-500 transition-all text-sm"
               />
-              <div className="absolute bottom-0 right-0 w-4 h-4 bg-green-500 rounded-full border-2 border-slate-800"></div>
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 w-4 h-4" />
             </div>
-            <div>
-              <h3 className="text-lg font-bold text-white">Priya Patel</h3>
-              <p className="text-slate-400 text-sm truncate">
-                That bug was a nightmare! 😂
-              </p>
+
+            <div className="relative">
+              <select className="w-full px-4 py-2.5 bg-gray-800 border border-gray-700 rounded-xl focus:outline-none focus:border-purple-500 appearance-none cursor-pointer text-sm pr-10">
+                <option>All Skills</option>
+                <option>Frontend</option>
+                <option>Backend</option>
+                <option>Full Stack</option>
+              </select>
+              <Filter className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 w-4 h-4 pointer-events-none" />
             </div>
           </div>
-          <button className="px-4 py-2 bg-pink-600 text-white rounded-lg hover:bg-pink-700 transition-colors">
-            Chat
-          </button>
         </div>
 
-        {/* Connection Item 2 */}
-        <div className="bg-slate-800 p-4 rounded-xl flex items-center justify-between border border-slate-700 hover:border-slate-600 transition-colors">
-          <div className="flex items-center space-x-4">
-            <div className="relative">
-              <img
-                src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
-                alt="James"
-                className="w-16 h-16 rounded-full object-cover"
-              />
-            </div>
-            <div>
-              <h3 className="text-lg font-bold text-white">James Wilson</h3>
-              <p className="text-slate-400 text-sm truncate">
-                Are you going to the tech meetup tomorrow?
-              </p>
-            </div>
-          </div>
-          <button className="px-4 py-2 bg-pink-600 text-white rounded-lg hover:bg-pink-700 transition-colors">
-            Chat
-          </button>
+        {/* --- Connections Grid --- */}
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredConnections.map((item) => (
+            <ConnectionCard key={item._id} data={item} />
+          ))}
         </div>
+
+        {/* Empty State */}
+        {filteredConnections.length === 0 && (
+          <div className="text-center py-20">
+            <p className="text-gray-500 text-lg">
+              No connections found matching your search.
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );
