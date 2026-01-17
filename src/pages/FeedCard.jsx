@@ -1,9 +1,8 @@
 import { CheckCircle2 } from "lucide-react";
-import { FaTimes, FaUser, FaHeart } from "react-icons/fa";
+import { FaTimes, FaHeart } from "react-icons/fa";
 import { FaLocationDot } from "react-icons/fa6";
 
 import SkillTags from "../components/SkillTags";
-import { Link } from "react-router-dom";
 
 function FeedCard({ user }) {
   const { name, avatar, about, headline, location, skills } = user;
@@ -52,15 +51,6 @@ function FeedCard({ user }) {
           >
             <FaTimes className="text-2xl text-gray-400 group-hover:text-red-500 transition-colors" />
           </button>
-
-          <Link to="/profile-view">
-            <button
-              className="w-12 h-12 bg-gray-800 rounded-full flex items-center justify-center hover:bg-blue-500/10 hover:border-blue-500 border-2 border-gray-700 transition-all group shadow-lg shadow-black/40 cursor-pointer"
-              aria-label="View Profile"
-            >
-              <FaUser className="text-lg text-gray-400 group-hover:text-blue-500 transition-colors" />
-            </button>
-          </Link>
 
           <button
             className="w-16 h-16 bg-gray-800 rounded-full flex items-center justify-center hover:bg-green-500/10 hover:border-green-500 border-2 border-gray-700 transition-all group shadow-lg shadow-black/40 cursor-pointer"
