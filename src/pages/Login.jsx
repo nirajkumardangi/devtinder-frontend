@@ -14,7 +14,6 @@ function Login() {
   const [email, setEmail] = useState("niraj@gmail.com");
   const [password, setPassword] = useState("Niraj@123");
   const [error, setError] = useState("");
-  const [alert, setAlert] = useState({ type: "", message: "" });
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -120,11 +119,11 @@ function Login() {
 
             {/* --- Social Buttons --- */}
             <div className="mt-6 grid grid-cols-2 gap-4">
-              <button className="py-3 bg-gray-900 rounded-xl border border-gray-700 hover:border-gray-500 transition-all flex items-center justify-center text-gray-300 hover:text-white hover:bg-gray-800/50">
+              <button className="py-3 bg-gray-900 rounded-xl border border-gray-700 hover:border-gray-500 transition-all flex items-center justify-center text-gray-300 hover:text-white hover:bg-gray-800/50 cursor-pointer">
                 <FaGithub className="w-5 h-5 mr-2" />
                 GitHub
               </button>
-              <button className="py-3 bg-gray-900 rounded-xl border border-gray-700 hover:border-gray-500 transition-all flex items-center justify-center text-gray-300 hover:text-white hover:bg-gray-800/50">
+              <button className="py-3 bg-gray-900 rounded-xl border border-gray-700 hover:border-gray-500 transition-all flex items-center justify-center text-gray-300 hover:text-white hover:bg-gray-800/50 cursor-pointer">
                 <FaGoogle className="text-xl mr-2 text-white" />
                 Google
               </button>
@@ -137,7 +136,7 @@ function Login() {
           Don't have an account?{" "}
           <Link
             to="/signup"
-            className="text-purple-400 hover:text-purple-300 font-medium hover:underline transition-all"
+            className="text-purple-400 hover:text-purple-300 font-medium hover:underline transition-all cursor-pointer"
           >
             Sign up
           </Link>

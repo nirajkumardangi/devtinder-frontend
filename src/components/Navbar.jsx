@@ -124,7 +124,7 @@ function Navbar() {
               </>
             ) : (
               <Link to="/login">
-                <button className="px-4 py-2 bg-gradient-to-r from-pink-600 to-violet-600 text-white rounded-lg font-semibold text-sm hover:opacity-90 shadow-lg shadow-purple-900/20 transition-all">
+                <button className="px-4 py-2 bg-gradient-to-r from-pink-600 to-violet-600 text-white rounded-lg font-semibold text-sm hover:opacity-90 shadow-lg shadow-purple-900/20 transition-all cursor-pointer">
                   Login
                 </button>
               </Link>
