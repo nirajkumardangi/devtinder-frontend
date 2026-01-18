@@ -1,9 +1,14 @@
 import { Heart } from "lucide-react";
 import { FaGithub, FaLinkedin } from "react-icons/fa";
+import { useSelector } from "react-redux";
 
-const Footer = () => {
+function Footer() {
+  const { user } = useSelector((s) => s.user);
+
   return (
-    <footer className="bg-gray-900 border-t border-gray-800 pt-10 pb-6">
+    <footer
+      className={`bg-gray-900 border-t border-gray-800 pt-10 ${user ? "mb-12" : "mb-0"} md:mb-0 pb-6`}
+    >
       <div className="flex flex-col items-center justify-center gap-3 px-4 text-gray-300">
         <div className="flex flex-col md:flex-row items-center gap-2">
           <span>© 2024 DevTinder. Made with</span>
@@ -35,6 +40,6 @@ const Footer = () => {
       </div>
     </footer>
   );
-};
+}
 
 export default Footer;
