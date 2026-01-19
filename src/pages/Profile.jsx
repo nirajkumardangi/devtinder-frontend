@@ -15,11 +15,21 @@ import SkillTags from "../components/SkillTags";
 import { useNavigate } from "react-router-dom";
 
 function Profile() {
-  const { user } = useSelector((s) => s.user);
+  const { user, checked } = useSelector((s) => s.user);
+  const requests = useSelector((s) => s.request);
+  const connections = useSelector((s) => s.connection);
   const navigate = useNavigate();
+
+  if (!checked) return <Loading />;
+
+  // If somehow no user exists
+  if (!user) return <Loading />;
 
   const { name, avatar, about, headline, location, skills, createdAt, social } =
     user;
+
+  const city = location?.city || "";
+  const country = location?.country || "";
 
   const joinedDate = new Date(createdAt).toLocaleDateString("en-US", {
     year: "numeric",
@@ -39,7 +49,7 @@ function Profile() {
               <div className="w-32 h-32 rounded-full ring-4 ring-purple-500/60 p-[3px] bg-white/10">
                 <div className="w-full h-full rounded-full overflow-hidden">
                   <img
-                    src={avatar}
+                    src={avatar || "../../public/default-avatar.png"}
                     alt="profile"
                     className="w-full h-full object-cover object-center"
                   />
@@ -57,10 +67,10 @@ function Profile() {
               <p className="text-purple-400 text-base mb-2">{headline}</p>
               <div className="flex flex-wrap justify-center md:justify-start font-medium gap-x-4 gap-y-1 text-gray-400 whitespace-nowrap">
                 <span className="flex items-center gap-1 hover:text-white transition-all">
-                  <FaMapMarkerAlt /> {`${location.city},  ${location.country}`}
+                  <FaMapMarkerAlt /> {`${city},  ${country}`}
                 </span>
                 <span className="flex items-center gap-1 hover:text-white transition-all">
-                  <FaCalendar /> Joined {`${joinedDate}`}
+                  <FaCalendar /> Joined {joinedDate}
                 </span>
                 <span className="flex items-center gap-1 hover:text-blue-400 cursor-pointer transition-all">
                   <FaLink /> {"github.com/nirajkumardangi"}
@@ -89,7 +99,7 @@ function Profile() {
                 <h3 className="text-xl font-bold text-white">About Me</h3>
               </div>
               <p className="text-slate-300 font-medium leading-relaxed">
-                {about}
+                {about || "No bio added yet."}
               </p>
             </div>
 
@@ -101,9 +111,14 @@ function Profile() {
                   Skills & Technologies
                 </h3>
               </div>
-              <div className="flex flex-wrap gap-3 font-medium">
-                <SkillTags skills={skills} size={"medium"} />
-              </div>
+
+              {skills.length > 0 ? (
+                <div className="flex flex-wrap gap-3 font-medium">
+                  <SkillTags skills={skills} size="medium" />
+                </div>
+              ) : (
+                <p className="text-gray-500 italic">No skills added yet.</p>
+              )}
             </div>
           </div>
 
@@ -117,15 +132,21 @@ function Profile() {
               <div className="space-y-3 text-base font-medium">
                 <div className="flex justify-between items-center py-1">
                   <span className="text-slate-400">Profile Views</span>
-                  <span className="text-purple-400 text-base">1,234</span>
+                  <span className="text-purple-400 text-base">
+                    {connections.length + requests.length}
+                  </span>
                 </div>
                 <div className="flex justify-between items-center py-1">
                   <span className="text-slate-400">Connections</span>
-                  <span className="text-green-400 text-base">89</span>
+                  <span className="text-green-400 text-base">
+                    {connections.length}
+                  </span>
                 </div>
                 <div className="flex justify-between items-center py-1">
                   <span className="text-slate-400">Pending Requests</span>
-                  <span className="text-yellow-400 text-base">12</span>
+                  <span className="text-yellow-400 text-base">
+                    {requests.length}
+                  </span>
                 </div>
               </div>
             </div>
@@ -144,7 +165,9 @@ function Profile() {
                     <div className="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center group-hover:bg-slate-700 transition">
                       <FaGithub className="text-white" />
                     </div>
-                    <span>/{social.github}</span>
+                    <span className="truncate max-w-[180px]">
+                      /{social.github}
+                    </span>
                   </a>
                   <a
                     className="flex items-center gap-3 text-slate-400 hover:text-white transition group"
@@ -153,7 +176,9 @@ function Profile() {
                     <div className="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center group-hover:bg-blue-600/20 transition">
                       <FaLinkedin className="text-blue-500" />
                     </div>
-                    <span> /{social.linkedin}</span>
+                    <span className="truncate max-w-[180px]">
+                      /{social.linkedin}
+                    </span>
                   </a>
 
                   <a
@@ -163,7 +188,9 @@ function Profile() {
                     <div className="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center group-hover:bg-purple-500/20 transition">
                       <FaGlobe className="text-purple-500" />
                     </div>
-                    <span>/{social.website}</span>
+                    <span className="truncate max-w-[180px]">
+                      /{social.website}
+                    </span>
                   </a>
                 </div>
               </div>
