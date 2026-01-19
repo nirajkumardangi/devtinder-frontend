@@ -22,7 +22,7 @@ function Home() {
         <div className="absolute top-20 left-10 w-72 h-72 bg-purple-600 rounded-full filter blur-[100px] opacity-30 animate-pulse"></div>
         <div className="absolute bottom-20 right-10 w-96 h-96 bg-pink-600 rounded-full filter blur-[100px] opacity-30 animate-pulse"></div>
 
-        <div className="relative max-w-7xl min-h-screen mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-26">
+        <div className="relative max-w-7xl min-h-screen mx-auto px-4 sm:px-6 lg:px-8 py-22 sm:py-26">
           <div className="grid md:grid-cols-2 gap-10 items-center">
             {/* --- Left Column: Text Content --- */}
             <div className="text-center md:text-left z-10">
@@ -38,7 +38,7 @@ function Home() {
               </p>
 
               {/* Action Buttons */}
-              <div className="flex flex-col md:flex-wrap sm:flex-row gap-4 justify-center md:justify-start">
+              <div className="flex flex-col px-8 md:px-0 md:flex-wrap sm:flex-row gap-4 justify-center md:justify-start">
                 <Link
                   to="/login"
                   className="px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 rounded-xl font-semibold text-lg hover:opacity-90 transition-all transform hover:scale-105 shadow-lg shadow-purple-500/25 flex items-center justify-center gap-2 whitespace-nowrap"
