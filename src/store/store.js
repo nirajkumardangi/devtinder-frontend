@@ -7,9 +7,9 @@ import requestReducer from "../features/requestSlice";
 const store = configureStore({
   reducer: {
     user: userReducer,
-    connection: connectionReducer,
     feed: feedReducer,
     request: requestReducer,
+    connection: connectionReducer,
   },
 });
 
