@@ -34,7 +34,7 @@ function Layout() {
 
   return (
     <div className="flex flex-col min-h-screen">
-      <div className="mt-10">
+      <div className="mt-14">
         <Navbar />
       </div>
       <main className="flex-1">
