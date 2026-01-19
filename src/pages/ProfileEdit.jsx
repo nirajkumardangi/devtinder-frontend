@@ -16,6 +16,7 @@ import { useNavigate } from "react-router-dom";
 import { BASE_URL } from "../utils/constants";
 import { toast } from "react-toastify";
 import { addUser } from "../features/userSlice";
+import defaultAvatar from "../assets/avatar.png";
 
 function ProfileEdit() {
   const navigate = useNavigate();
@@ -151,7 +152,7 @@ function ProfileEdit() {
               {/* Avatar Wrapper */}
               <div className="relative w-24 h-24">
                 <img
-                  src={formData.avatar || "../../public/default-avatar.png"}
+                  src={formData.avatar || defaultAvatar}
                   alt="avatar"
                   className="w-24 h-24 rounded-full ring-4 ring-purple-500/50 bg-gray-700 object-cover"
                 />

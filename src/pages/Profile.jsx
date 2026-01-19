@@ -13,6 +13,7 @@ import { BsCodeSlash } from "react-icons/bs";
 import { useSelector } from "react-redux";
 import SkillTags from "../components/SkillTags";
 import { useNavigate } from "react-router-dom";
+import defaultAvatar from "../assets/avatar.png";
 
 function Profile() {
   const { user, checked } = useSelector((s) => s.user);
@@ -51,7 +52,7 @@ function Profile() {
               <div className="w-32 h-32 rounded-full ring-4 ring-purple-500/60 p-[3px] bg-white/10">
                 <div className="w-full h-full rounded-full overflow-hidden">
                   <img
-                    src={avatar || "../../public/default-avatar.png"}
+                    src={avatar || defaultAvatar}
                     alt="profile"
                     className="w-full h-full object-cover object-center"
                   />
@@ -68,9 +69,11 @@ function Profile() {
               <h1 className="text-3xl font-bold mb-1">{name}</h1>
               <p className="text-purple-400 text-base mb-2">{headline}</p>
               <div className="flex flex-wrap justify-center md:justify-start font-medium gap-x-4 gap-y-1 text-gray-400 whitespace-nowrap">
-                <span className="flex items-center gap-1 hover:text-white transition-all">
-                  <FaMapMarkerAlt /> {`${city},  ${country}`}
-                </span>
+                {(city || country) && (
+                  <span className="flex items-center gap-1 hover:text-white transition-all">
+                    <FaMapMarkerAlt /> {`${city},  ${country}`}
+                  </span>
+                )}
                 <span className="flex items-center gap-1 hover:text-white transition-all">
                   <FaCalendar /> Joined {joinedDate}
                 </span>
@@ -80,7 +83,7 @@ function Profile() {
                     target="_blank"
                   >
                     <span className="flex items-center gap-1 hover:text-blue-400 cursor-pointer transition-all">
-                      <FaLink /> {social.github}
+                      <FaLink /> http://github.com/{social.github}
                     </span>
                   </a>
                 )}
@@ -167,43 +170,50 @@ function Profile() {
                   Social Links
                 </h3>
                 <div className="space-y-4">
-                  <a
-                    target="_blank"
-                    className="flex items-center gap-3 text-slate-400 hover:text-white transition group"
-                    href={`https://github.com/${social.github}`}
-                  >
-                    <div className="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center group-hover:bg-slate-700 transition">
-                      <FaGithub className="text-white" />
-                    </div>
-                    <span className="truncate max-w-[180px]">
-                      /{social.github}
-                    </span>
-                  </a>
-                  <a
-                    target="_blank"
-                    className="flex items-center gap-3 text-slate-400 hover:text-white transition group"
-                    href={`https://www.linkedin.com/in/${social.linkedin}`}
-                  >
-                    <div className="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center group-hover:bg-blue-600/20 transition">
-                      <FaLinkedin className="text-blue-500" />
-                    </div>
-                    <span className="truncate max-w-[180px]">
-                      /{social.linkedin}
-                    </span>
-                  </a>
+                  {social.github && (
+                    <a
+                      target="_blank"
+                      className="flex items-center gap-3 text-slate-400 hover:text-white transition group"
+                      href={`https://github.com/${social.github}`}
+                    >
+                      <div className="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center group-hover:bg-slate-700 transition">
+                        <FaGithub className="text-white" />
+                      </div>
+                      <span className="truncate max-w-[180px]">
+                        /{social.github}
+                      </span>
+                    </a>
+                  )}
 
-                  <a
-                    target="_blank"
-                    className="flex items-center gap-3 text-slate-400 hover:text-white transition group "
-                    href={`https://${social.website}`}
-                  >
-                    <div className="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center group-hover:bg-purple-500/20 transition">
-                      <FaGlobe className="text-purple-500" />
-                    </div>
-                    <span className="truncate max-w-[180px]">
-                      /{social.website}
-                    </span>
-                  </a>
+                  {social.linkedin && (
+                    <a
+                      target="_blank"
+                      className="flex items-center gap-3 text-slate-400 hover:text-white transition group"
+                      href={`https://www.linkedin.com/in/${social.linkedin}`}
+                    >
+                      <div className="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center group-hover:bg-blue-600/20 transition">
+                        <FaLinkedin className="text-blue-500" />
+                      </div>
+                      <span className="truncate max-w-[180px]">
+                        /{social.linkedin}
+                      </span>
+                    </a>
+                  )}
+
+                  {social.website && (
+                    <a
+                      target="_blank"
+                      className="flex items-center gap-3 text-slate-400 hover:text-white transition group "
+                      href={`https://${social.website}`}
+                    >
+                      <div className="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center group-hover:bg-purple-500/20 transition">
+                        <FaGlobe className="text-purple-500" />
+                      </div>
+                      <span className="truncate max-w-[180px]">
+                        /{social.website}
+                      </span>
+                    </a>
+                  )}
                 </div>
               </div>
             )}

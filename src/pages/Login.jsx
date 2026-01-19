@@ -54,7 +54,7 @@ function Login() {
         { withCredentials: true },
       );
 
-      toast.success("Welcome back!");
+      toast.success("login successful!", { autoClose: 1500 });
       dispatch(addUser(res?.data?.user));
       navigate("/feed", { replace: true });
     } catch (err) {
@@ -63,7 +63,6 @@ function Login() {
         err?.message ||
         "Unable to login right now!";
       setError(message);
-      toast.error(message);
     } finally {
       setSubmitting(false);
     }

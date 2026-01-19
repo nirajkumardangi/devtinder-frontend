@@ -12,7 +12,9 @@ import {
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import { removeUser } from "../features/userSlice";
+import defaultAvatar from "../assets/avatar.png";
 
 function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -24,6 +26,7 @@ function Navbar() {
     dispatch(removeUser());
     setIsMobileMenuOpen(false);
     navigate("/");
+    toast.success("Logged out successfully!", { autoClose: 1500 });
   };
 
   const closeMobileMenu = () => setIsMobileMenuOpen(false);
@@ -75,10 +78,7 @@ function Navbar() {
                     className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-full bg-gray-800 hover:bg-gray-700 border border-gray-700 text-gray-200"
                   >
                     <img
-                      src={
-                        user?.avatar ||
-                        `https://ui-avatars.com/api/?name=${user?.name}`
-                      }
+                      src={user.avatar || defaultAvatar}
                       alt="avatar"
                       className="w-8 h-8 rounded-full"
                     />

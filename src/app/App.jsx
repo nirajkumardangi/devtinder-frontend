@@ -7,6 +7,7 @@ import Protected from "./Protected";
 
 import Home from "../pages/Home";
 import Login from "../pages/Login";
+import Signup from "../pages/Signup";
 import Feed from "../pages/Feed";
 import Profile from "../pages/Profile";
 import Request from "../pages/Requests";
@@ -68,6 +69,7 @@ function App() {
           />
 
           <Route path="login" element={<Login />} />
+          <Route path="signup" element={<Signup />} />
         </Route>
       </Routes>
     </BrowserRouter>

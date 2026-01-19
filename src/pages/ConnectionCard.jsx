@@ -28,14 +28,14 @@ function ConnectionCard({ data }) {
           {/* Name */}
           <div>
             <h3 className="font-semibold text-lg leading-tight">{data.name}</h3>
-            <p className="text-purple-400 text-sm mt-0.5 truncate max-w-[200px]">
+            <p className="text-purple-400 text-sm mt-0.5 truncate max-w-[200px] lg:max-w-[150px] xl:max-w-[200px]">
               {data.headline}
             </p>
           </div>
         </div>
 
         {/* Menu */}
-        <button className="p-2 hover:bg-gray-800 rounded-lg transition text-gray-400 hover:text-white cursor-pointer">
+        <button className=" hover:bg-gray-800 rounded-lg transition text-gray-400 hover:text-white cursor-pointer">
           <MoreVertical className="w-5 h-5" />
         </button>
       </div>
