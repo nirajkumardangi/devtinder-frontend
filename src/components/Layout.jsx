@@ -34,11 +34,15 @@ function Layout() {
 
   return (
     <div className="flex flex-col min-h-screen">
-      <Navbar />
+      <div className="mt-10">
+        <Navbar />
+      </div>
       <main className="flex-1">
         <Outlet />
       </main>
-      <Footer />
+      <div>
+        <Footer />
+      </div>
     </div>
   );
 }
