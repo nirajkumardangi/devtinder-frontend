@@ -9,6 +9,7 @@ import {
   FaSave,
   FaTimes,
   FaUpload,
+  FaCamera,
 } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
@@ -21,8 +22,15 @@ function ProfileEdit() {
   const { user } = useSelector((s) => s.user);
   const dispatch = useDispatch();
 
+  const safeUser = {
+    skills: [],
+    location: { city: "", country: "" },
+    social: {},
+    ...user,
+  };
+
   // Mock State for Form Data
-  const [formData, setFormData] = useState(user);
+  const [formData, setFormData] = useState(safeUser);
   const [newSkill, setNewSkill] = useState("");
   const [avatarFile, setAvatarFile] = useState(null);
 
@@ -93,11 +101,12 @@ function ProfileEdit() {
     setNewSkill("");
   }
 
-  function handleRemoveSkill(skillToRemove) {
-    setFormData((prev) => ({
-      ...prev,
-      skills: prev.skills.filter((s) => s !== skillToRemove),
-    }));
+  function removeSkill(skillToRemove) {
+    const filteredSkills = formData.skills.filter(
+      (skill) => skill.toLowerCase() !== skillToRemove.toLowerCase(),
+    );
+
+    setFormData((prev) => ({ ...prev, skills: filteredSkills }));
   }
 
   // Handle Submit Form
@@ -107,9 +116,7 @@ function ProfileEdit() {
         withCredentials: true,
       });
 
-      // console.log("Profile updated:", res?.data?.user);
       dispatch(addUser(res?.data?.user));
-
       toast.success("Profile updated successfully!");
       navigate("/profile");
     } catch (error) {
@@ -139,12 +146,26 @@ function ProfileEdit() {
           {/* --- Avatar Section --- */}
           <div className="bg-gray-800 rounded-2xl p-6 border border-gray-700">
             <h2 className="text-lg font-bold mb-4">Profile Photo</h2>
+
             <div className="flex flex-col sm:flex-row items-center gap-6">
-              <img
-                src={formData.avatar || "../../public/default-avatar.png"}
-                alt="avatar"
-                className="w-24 h-24 rounded-full ring-4 ring-purple-500/50 bg-gray-700 object-cover"
-              />
+              {/* Avatar Wrapper */}
+              <div className="relative w-24 h-24">
+                <img
+                  src={formData.avatar || "../../public/default-avatar.png"}
+                  alt="avatar"
+                  className="w-24 h-24 rounded-full ring-4 ring-purple-500/50 bg-gray-700 object-cover"
+                />
+
+                {/* Camera Icon */}
+                <button
+                  onClick={() =>
+                    document.getElementById("avatarUpload").click()
+                  }
+                  className="absolute bottom-0 right-0 w-9 h-9 bg-purple-600 rounded-full flex items-center justify-center hover:bg-purple-700 transition-all cursor-pointer shadow-md"
+                >
+                  <FaCamera className="text-white" size={16} />
+                </button>
+              </div>
 
               <div className="text-center sm:text-left">
                 <div className="flex gap-2 justify-center sm:justify-start">
@@ -157,7 +178,7 @@ function ProfileEdit() {
                     onChange={handleAvatarUpload}
                   />
 
-                  {/* Upload button triggers file input */}
+                  {/* Upload button */}
                   <button
                     onClick={() =>
                       document.getElementById("avatarUpload").click()
@@ -167,6 +188,7 @@ function ProfileEdit() {
                     <FaUpload className="mr-2" /> Upload Photo
                   </button>
 
+                  {/* Remove Button */}
                   <button
                     onClick={handleRemoveAvatar}
                     className="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg font-medium transition-all text-gray-300 cursor-pointer"
@@ -249,7 +271,7 @@ function ProfileEdit() {
                 <textarea
                   rows="4"
                   minLength={10}
-                  maxLength={300}
+                  maxLength={350}
                   name="about"
                   value={formData.about}
                   onChange={handleChange}
@@ -268,7 +290,7 @@ function ProfileEdit() {
                   key={index}
                   className="px-3 py-1.5 bg-gray-700/50 text-gray-300 border border-gray-600 rounded-full text-sm flex items-center gap-2 group"
                 >
-                  {skill}
+                  {skill.charAt(0).toUpperCase() + skill.slice(1)}
                   <button
                     onClick={() => handleRemoveSkill(skill)}
                     className="hover:text-red-400 transition-colors cursor-pointer"
@@ -303,45 +325,79 @@ function ProfileEdit() {
             </div>
           </div>
 
-          {/* --- Social Links --- */}
           <div className="bg-gray-800 rounded-2xl p-6 border border-gray-700">
             <h2 className="text-lg font-bold mb-4">Social Links</h2>
-            <div className="space-y-4">
+            <div className="space-y-5">
+              {/* GitHub */}
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-gray-900 rounded-lg flex items-center justify-center shrink-0 border border-gray-700">
                   <FaGithub className="text-xl text-gray-400" />
                 </div>
-                <input
-                  type="text"
-                  name="social.github"
-                  placeholder="username"
-                  onChange={handleChange}
-                  className="flex-1 px-4 py-2 bg-gray-900 border border-gray-700 rounded-xl focus:outline-none focus:border-purple-500 transition-all text-white"
-                />
+
+                <div className="flex flex-1 items-center bg-gray-900 border border-gray-700 rounded-xl overflow-hidden transition-all focus-within:border-purple-500">
+                  <span className="px-2 py-2 text-gray-400 whitespace-nowrap text-sm">
+                    https://github.com/
+                  </span>
+
+                  <div className="h-6 w-px bg-gray-700" />
+
+                  <input
+                    type="text"
+                    name="social.github"
+                    placeholder="username"
+                    value={formData.social.github || ""}
+                    onChange={handleChange}
+                    className="flex-1 px-2 py-2 bg-transparent text-white focus:outline-none text-sm"
+                  />
+                </div>
               </div>
+
+              {/* LinkedIn */}
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-gray-900 rounded-lg flex items-center justify-center shrink-0 border border-gray-700">
                   <FaLinkedin className="text-xl text-blue-500" />
                 </div>
-                <input
-                  type="text"
-                  name="social.linkedin"
-                  placeholder="username"
-                  onChange={handleChange}
-                  className="flex-1 px-4 py-2 bg-gray-900 border border-gray-700 rounded-xl focus:outline-none focus:border-purple-500 transition-all text-white"
-                />
+
+                <div className="flex flex-1 items-center bg-gray-900 border border-gray-700 rounded-xl overflow-hidden transition-all focus-within:border-purple-500">
+                  <span className="px-2 py-2 text-gray-400 whitespace-nowrap text-sm">
+                    https://www.linkedin.com/in/
+                  </span>
+
+                  <div className="h-6 w-px bg-gray-700" />
+
+                  <input
+                    type="text"
+                    name="social.linkedin"
+                    placeholder="username"
+                    value={formData.social.linkedin || ""}
+                    onChange={handleChange}
+                    className="flex-1 px-2 py-2 bg-transparent text-white focus:outline-none text-sm"
+                  />
+                </div>
               </div>
+
+              {/* Website */}
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-gray-900 rounded-lg flex items-center justify-center shrink-0 border border-gray-700">
                   <FaGlobe className="text-xl text-purple-400" />
                 </div>
-                <input
-                  type="text"
-                  name="social.website"
-                  placeholder="website url"
-                  onChange={handleChange}
-                  className="flex-1 px-4 py-2 bg-gray-900 border border-gray-700 rounded-xl focus:outline-none focus:border-purple-500 transition-all text-white"
-                />
+
+                <div className="flex flex-1 items-center bg-gray-900 border border-gray-700 rounded-xl overflow-hidden transition-all focus-within:border-purple-500">
+                  <span className="px-2 py-2 text-gray-400 whitespace-nowrap text-sm">
+                    https://
+                  </span>
+
+                  <div className="h-6 w-px bg-gray-700" />
+
+                  <input
+                    type="text"
+                    name="social.website"
+                    placeholder="your-domain.com"
+                    value={formData.social.website || ""}
+                    onChange={handleChange}
+                    className="flex-1 px-2 py-2 bg-transparent text-white focus:outline-none text-sm"
+                  />
+                </div>
               </div>
             </div>
           </div>
