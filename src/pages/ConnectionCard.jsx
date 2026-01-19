@@ -28,7 +28,7 @@ function ConnectionCard({ data }) {
           {/* Name */}
           <div>
             <h3 className="font-semibold text-lg leading-tight">{data.name}</h3>
-            <p className="text-purple-400 text-sm mt-0.5 truncate max-w-[150px]">
+            <p className="text-purple-400 text-sm mt-0.5 truncate max-w-[200px]">
               {data.headline}
             </p>
           </div>
