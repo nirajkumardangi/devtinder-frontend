@@ -18,7 +18,7 @@ function SkillTags({ skills, size = "small", btn = false }) {
             ${colorFor(skill)}
           `}
         >
-          {skill}
+          {skill.charAt(0).toUpperCase() + skill.slice(1)}
         </span>
       ))}
     </div>
