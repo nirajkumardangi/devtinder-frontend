@@ -11,7 +11,6 @@ import Feed from "../pages/Feed";
 import Profile from "../pages/Profile";
 import Request from "../pages/Requests";
 import Connections from "../pages/Connections";
-import FeedUserProfileView from "../pages/FeedUserProfileView";
 import ProfileEdit from "../pages/ProfileEdit";
 
 function App() {
@@ -37,15 +36,6 @@ function App() {
             element={
               <Protected>
                 <Profile />
-              </Protected>
-            }
-          />
-
-          <Route
-            path="profile-view"
-            element={
-              <Protected>
-                <FeedUserProfileView />
               </Protected>
             }
           />
