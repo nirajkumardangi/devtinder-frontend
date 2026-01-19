@@ -1,31 +1,55 @@
 import axios from "axios";
-import { Inbox, Flame } from "lucide-react";
-import { useEffect } from "react";
-import { BASE_URL } from "../utils/constants";
-import RequestCard from "./RequestCard";
-import { addRequest } from "../features/requestSlice";
+import { Flame, Inbox } from "lucide-react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
+import { addRequest, removeRequest } from "../features/requestSlice";
+import { BASE_URL } from "../utils/constants";
+import Loading from "./Loading";
+import RequestCard from "./RequestCard";
 
 function Requests() {
-  const data = useSelector((s) => s.request);
   const dispatch = useDispatch();
+  const requests = useSelector((s) => s.request);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    async function fetchRequest() {
+    async function fetchReceived() {
+      if (requests.length > 0) return;
+
+      setLoading(true);
       try {
-        const res = await axios.get(BASE_URL + "/users/requests", {
+        const res = await axios.get(`${BASE_URL}/users/requests`, {
           withCredentials: true,
         });
-        dispatch(addRequest(res?.data?.data));
+
+        dispatch(addRequest(res?.data?.data || []));
       } catch (error) {
-        toast.error("Error while fetching user requests");
-        console.error("Requests Error:", error.response?.data);
+        toast.error(error?.response?.data || "Failed to fetch requests");
+      } finally {
+        setLoading(false);
       }
     }
 
-    fetchRequest();
-  }, []);
+    fetchReceived();
+  }, [requests.length, dispatch]);
+
+  const reviewRequest = async (status, id) => {
+    try {
+      const res = await axios.post(
+        `${BASE_URL}/request/review/${status}/${id}`,
+        {},
+        { withCredentials: true },
+      );
+
+      dispatch(removeRequest(id));
+    } catch (err) {
+      toast.error(err?.response?.data || "Failed to procesed");
+    }
+  };
+
+  if (loading) return <Loading />;
 
   return (
     <section id="page-requests" className="py-8 px-4">
@@ -38,44 +62,42 @@ function Requests() {
               Developers who want to connect with you
             </p>
           </div>
-          <div className="flex items-center gap-2 text-gray-400">
-            <span className="px-3 py-1 bg-purple-500/20 text-purple-400 rounded-full text-sm font-medium">
-              {data.length} pending
-            </span>
+          <span className="px-3 py-1 bg-purple-500/20 text-purple-400 rounded-full text-sm font-medium">
+            {requests.length} pending
+          </span>
+        </div>
+
+        {/* Empty */}
+        {requests.length === 0 && (
+          <div className="text-center py-16">
+            <div className="w-24 h-24 bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-6">
+              <Inbox size={48} className="text-gray-600" />
+            </div>
+            <h3 className="text-xl font-bold mb-2">No pending requests</h3>
+            <p className="text-gray-400 mb-6">
+              Start swiping to get more connection requests!
+            </p>
+            <Link to="/">
+              <button className="px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl font-medium hover:opacity-90 transition-all flex items-center gap-2 mx-auto cursor-pointer">
+                <Flame size={20} />
+                Go to Feed
+              </button>
+            </Link>
           </div>
-        </div>
+        )}
 
-        {/* Tabs */}
-        <div className="flex gap-2 mb-6">
-          <button className="px-4 py-2 bg-purple-500 rounded-lg font-medium">
-            Received
-          </button>
-          {/* <button className="px-4 py-2 bg-gray-800 hover:bg-gray-700 rounded-lg font-medium transition-all">
-            Sent
-          </button> */}
-        </div>
-
-        <div className="space-y-4">
-          {/* Request Card 1 */}
-          {data.map((item) => (
-            <RequestCard key={item._id} user={item} />
-          ))}
-        </div>
-
-        {/* Empty State (Hidden by default) */}
-        <div className="hidden text-center py-16">
-          <div className="w-24 h-24 bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-6">
-            <Inbox size={48} className="text-gray-600" />
+        {/* List */}
+        {requests.length > 0 && (
+          <div className="space-y-4">
+            {requests.map((req) => (
+              <RequestCard
+                key={req._id}
+                user={req}
+                reviewRequest={reviewRequest}
+              />
+            ))}
           </div>
-          <h3 className="text-xl font-bold mb-2">No pending requests</h3>
-          <p className="text-gray-400 mb-6">
-            Start swiping to get more connection requests!
-          </p>
-          <button className="px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl font-medium hover:opacity-90 transition-all flex items-center gap-2 mx-auto">
-            <Flame size={20} />
-            Go to Feed
-          </button>
-        </div>
+        )}
       </div>
     </section>
   );
