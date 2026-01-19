@@ -36,6 +36,8 @@ function Profile() {
     month: "short",
   });
 
+  const hasSocial = social?.github || social?.linkedin || social?.website;
+
   return (
     <div className="w-full min-h-screen bg-[#0B101B] py-10 px-4 font-sans text-slate-200">
       <div className="max-w-4xl mx-auto space-y-6">
@@ -72,9 +74,16 @@ function Profile() {
                 <span className="flex items-center gap-1 hover:text-white transition-all">
                   <FaCalendar /> Joined {joinedDate}
                 </span>
-                <span className="flex items-center gap-1 hover:text-blue-400 cursor-pointer transition-all">
-                  <FaLink /> {"github.com/nirajkumardangi"}
-                </span>
+                {hasSocial && (
+                  <a
+                    href={`http://github.com/${social.github}`}
+                    target="_blank"
+                  >
+                    <span className="flex items-center gap-1 hover:text-blue-400 cursor-pointer transition-all">
+                      <FaLink /> {social.github}
+                    </span>
+                  </a>
+                )}
               </div>
             </div>
 
@@ -152,13 +161,14 @@ function Profile() {
             </div>
 
             {/* SOCIAL LINKS */}
-            {social && (
+            {hasSocial && (
               <div className="bg-[#161E2D] border border-slate-800 rounded-2xl font-medium p-6 shadow-sm">
                 <h3 className="font-bold mb-5 text-white text-lg">
                   Social Links
                 </h3>
                 <div className="space-y-4">
                   <a
+                    target="_blank"
                     className="flex items-center gap-3 text-slate-400 hover:text-white transition group"
                     href={`https://github.com/${social.github}`}
                   >
@@ -170,6 +180,7 @@ function Profile() {
                     </span>
                   </a>
                   <a
+                    target="_blank"
                     className="flex items-center gap-3 text-slate-400 hover:text-white transition group"
                     href={`https://www.linkedin.com/in/${social.linkedin}`}
                   >
@@ -182,6 +193,7 @@ function Profile() {
                   </a>
 
                   <a
+                    target="_blank"
                     className="flex items-center gap-3 text-slate-400 hover:text-white transition group "
                     href={`https://${social.website}`}
                   >

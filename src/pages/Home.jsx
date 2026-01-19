@@ -22,8 +22,8 @@ function Home() {
         <div className="absolute top-20 left-10 w-72 h-72 bg-purple-600 rounded-full filter blur-[100px] opacity-30 animate-pulse"></div>
         <div className="absolute bottom-20 right-10 w-96 h-96 bg-pink-600 rounded-full filter blur-[100px] opacity-30 animate-pulse"></div>
 
-        <div className="relative max-w-7xl min-h-screen mx-auto px-4 sm:px-6 lg:px-8 py-22 sm:py-26">
-          <div className="grid md:grid-cols-2 gap-10 items-center">
+        <div className="relative flex justify-center items-center max-w-7xl min-h-screen mx-auto px-4">
+          <div className="grid md:grid-cols-2 lg:gap-40 justify-between z-10">
             {/* --- Left Column: Text Content --- */}
             <div className="text-center md:text-left z-10">
               <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
