@@ -1,7 +1,23 @@
 import { MoreVertical, MessageSquare, User } from "lucide-react";
 import SkillTags from "../components/SkillTags";
+import { useState, useEffect, useRef } from "react";
 
 function ConnectionCard({ data }) {
+  const [open, setOpen] = useState(false);
+
+  const menuRef = useRef(null);
+
+  // Close when clicking outside
+  useEffect(() => {
+    function handleClickOutside(e) {
+      if (menuRef.current && !menuRef.current.contains(e.target)) {
+        setOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   return (
     <div className="bg-gray-800 rounded-2xl p-6 border border-gray-700 hover:border-purple-500/50 transition-all group flex flex-col">
       {/* Header */}
@@ -35,9 +51,32 @@ function ConnectionCard({ data }) {
         </div>
 
         {/* Menu */}
-        <button className=" hover:bg-gray-800 rounded-lg transition text-gray-400 hover:text-white cursor-pointer">
-          <MoreVertical className="w-5 h-5" />
-        </button>
+        <div className="relative">
+          <button
+            ref={menuRef}
+            onClick={() => setOpen(!open)}
+            className="hover:bg-gray-800 rounded-lg transition text-gray-400 hover:text-white cursor-pointer p-1"
+          >
+            <MoreVertical className="w-5 h-5" />
+          </button>
+
+          {open && (
+            <div className="absolute text-sm right-0 w-30 bg-gray-900 border border-gray-700 rounded-xl shadow-xl overflow-hidden z-10">
+              <button className="w-full text-left px-4 py-2 hover:bg-gray-800 text-gray-200">
+                View Profile
+              </button>
+              <button className="w-full text-left px-4 py-2 hover:bg-gray-800 text-gray-200">
+                Message
+              </button>
+              <button className="w-full text-left px-4 py-2 hover:bg-gray-800 text-gray-200">
+                Github
+              </button>
+              <button className="w-full text-left px-4 py-2 hover:bg-gray-800 text-red-400">
+                Remove
+              </button>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Skills */}
