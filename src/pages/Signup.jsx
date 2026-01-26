@@ -1,7 +1,6 @@
 import axios from "axios";
 import { useState } from "react";
-import { Mail, Lock, User, Eye, EyeOff } from "lucide-react";
-import { FaGithub, FaGoogle } from "react-icons/fa";
+import { Eye, EyeOff } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -13,9 +12,18 @@ import Loading from "../pages/Loading";
 function Signup() {
   const { user, checked } = useSelector((state) => state.user);
 
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [form, setForm] = useState({
+    name: "",
+    email: "",
+    password: "",
+    headline: "",
+    skills: "",
+    location: {
+      city: "",
+      country: "",
+    },
+  });
+
   const [showPassword, setShowPassword] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
@@ -26,30 +34,65 @@ function Signup() {
   if (!checked) return <Loading />;
   if (user) return <Navigate to="/feed" replace />;
 
+  // universal change handler
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+
+    // nested location fields
+    if (name === "city" || name === "country") {
+      return setForm((prev) => ({
+        ...prev,
+        location: {
+          ...prev.location,
+          [name]: value,
+        },
+      }));
+    }
+
+    setForm((prev) => ({ ...prev, [name]: value }));
+  };
+
   const handleSignup = async (e) => {
     e.preventDefault();
     setError("");
 
-    if (!name.trim()) return setError("Name is required");
-    if (!email.includes("@")) return setError("Please enter a valid email");
-    if (password.length < 6)
-      return setError("Password must be at least 6 characters long");
+    const payload = {
+      name: form.name.trim(),
+      email: form.email.trim(),
+      password: form.password,
+      headline: form.headline.trim(),
+      skills: form.skills
+        .split(/[\s,]+/)
+        .map((s) => s.trim())
+        .filter(Boolean),
+      location: {
+        city: form.location.city.trim(),
+        country: form.location.country.trim(),
+      },
+    };
+
+    // VALIDATIONS
+    if (!payload.name) return setError("Name is required");
+    if (!payload.email.includes("@")) return setError("Invalid email");
+    if (payload.password.length < 6)
+      return setError("Password must be at least 6 chars");
+    if (!payload.headline) return setError("Headline is required");
+    if (payload.skills.length === 0) return setError("Skills cannot be empty");
+    if (!payload.location.city || !payload.location.country)
+      return setError("City & Country required");
 
     setSubmitting(true);
 
     try {
-      const res = await axios.post(
-        `${BASE_URL}/auth/signup`,
-        { name, email, password },
-        { withCredentials: true },
-      );
+      const res = await axios.post(`${BASE_URL}/auth/signup`, payload, {
+        withCredentials: true,
+      });
 
       toast.success("Account created successfully!", { autoClose: 1500 });
       dispatch(addUser(res?.data?.user));
       navigate("/feed", { replace: true });
     } catch (err) {
-      const message =
-        err?.response?.data?.message || err?.message || "Signup failed!";
+      const message = err?.response?.data?.message || "Signup failed!";
       setError(message);
     } finally {
       setSubmitting(false);
@@ -57,127 +100,132 @@ function Signup() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center py-4 px-4 bg-gray-900 text-white font-sans">
-      <div className="w-full max-w-96">
-        <div className="bg-gray-800 rounded-2xl p-8 border border-gray-700 shadow-2xl">
-          <form onSubmit={handleSignup} className="space-y-6">
+    <div className="min-h-screen flex items-center justify-center py-10 px-4 bg-gray-900 text-white">
+      <div className="w-full max-w-4xl">
+        <div className="bg-gray-800 rounded-2xl p-8 border border-gray-700 shadow-xl">
+          <form onSubmit={handleSignup} className="space-y-5">
             {error && (
-              <div className="p-3 bg-red-500/10 border border-red-500/50 rounded-lg text-red-400 text-sm text-center">
+              <div className="p-3 text-sm text-red-400 bg-red-500/10 border border-red-500/40 rounded-lg text-center">
                 {error}
               </div>
             )}
 
-            {/* Name */}
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
-                Full Name
-              </label>
-              <div className="relative">
-                <input
-                  type="text"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="John Doe"
-                  className="w-full px-4 py-3 pl-12 bg-gray-900 border border-gray-700 rounded-xl focus:outline-none focus:border-purple-500 transition-all text-white placeholder-gray-500"
-                />
-                <User className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 w-5 h-5" />
+            {/* Name + Email */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {[
+                { name: "name", label: "Full Name", placeholder: "John Doe" },
+                {
+                  name: "email",
+                  label: "Email",
+                  placeholder: "john@example.com",
+                },
+              ].map((input) => (
+                <div key={input.name}>
+                  <label className="text-sm text-gray-300 mb-1 block">
+                    {input.label}
+                  </label>
+                  <input
+                    name={input.name}
+                    value={form[input.name]}
+                    onChange={handleChange}
+                    placeholder={input.placeholder}
+                    className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-xl focus:border-purple-500 outline-none"
+                  />
+                </div>
+              ))}
+            </div>
+
+            {/* Headline + Skills */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {[
+                {
+                  name: "headline",
+                  label: "Headline",
+                  placeholder: "Frontend Developer",
+                },
+                { name: "skills", label: "Skills", placeholder: "React, Node" },
+              ].map((input) => (
+                <div key={input.name}>
+                  <label className="text-sm text-gray-300 mb-1 block">
+                    {input.label}
+                  </label>
+                  <input
+                    name={input.name}
+                    value={form[input.name]}
+                    onChange={handleChange}
+                    placeholder={input.placeholder}
+                    className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-xl focus:border-purple-500 outline-none"
+                  />
+                </div>
+              ))}
+            </div>
+
+            {/* City + Country + Password */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {[
+                { name: "city", label: "City", placeholder: "Karachi" },
+                { name: "country", label: "Country", placeholder: "Pakistan" },
+              ].map((input) => (
+                <div key={input.name}>
+                  <label className="text-sm text-gray-300 mb-1 block">
+                    {input.label}
+                  </label>
+                  <input
+                    name={input.name}
+                    value={form.location[input.name]}
+                    onChange={handleChange}
+                    placeholder={input.placeholder}
+                    className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-xl focus:border-purple-500 outline-none"
+                  />
+                </div>
+              ))}
+
+              {/* Password */}
+              <div>
+                <label className="text-sm text-gray-300 mb-1 block">
+                  Password
+                </label>
+                <div className="relative">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    name="password"
+                    value={form.password}
+                    onChange={handleChange}
+                    placeholder="••••••••"
+                    className="w-full px-4 py-3 pr-10 bg-gray-900 border border-gray-700 rounded-xl focus:border-purple-500 outline-none"
+                  />
+                  <button
+                    type="button"
+                    className="absolute right-3 top-3 text-gray-400"
+                    onClick={() => setShowPassword(!showPassword)}
+                  >
+                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
+                </div>
               </div>
             </div>
 
-            {/* Email */}
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
-                Email Address
-              </label>
-              <div className="relative">
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="john@example.com"
-                  className="w-full px-4 py-3 pl-12 bg-gray-900 border border-gray-700 rounded-xl focus:outline-none focus:border-purple-500 transition-all text-white placeholder-gray-500"
-                />
-                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 w-5 h-5" />
-              </div>
-            </div>
-
-            {/* Password */}
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
-                Password
-              </label>
-              <div className="relative">
-                <input
-                  type={showPassword ? "text" : "password"}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                  className="w-full px-4 py-3 pl-12 pr-12 bg-gray-900 border border-gray-700 rounded-xl focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all text-white placeholder-gray-500"
-                />
-                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 w-5 h-5" />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white"
-                >
-                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                </button>
-              </div>
-            </div>
-
-            {/* Submit Button */}
+            {/* Submit */}
             <button
               disabled={submitting}
               type="submit"
-              className={`w-full mt-4 py-3.5 rounded-xl font-bold text-white transition-all transform hover:scale-[1.02] shadow-lg shadow-purple-500/25 cursor-pointer ${
+              className={`w-full py-3.5 font-semibold rounded-xl transition cursor-pointer ${
                 submitting
-                  ? "bg-gray-700 opacity-70 cursor-not-allowed"
+                  ? "bg-gray-700 cursor-not-allowed"
                   : "bg-gradient-to-r from-purple-600 to-pink-600 hover:opacity-90"
               }`}
             >
-              {submitting ? "Creating account..." : "Sign Up"}
+              {submitting ? "Creating..." : "Sign Up"}
             </button>
           </form>
 
-          {/* Divider */}
-          <div className="mt-8">
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-700"></div>
-              </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="px-4 bg-gray-800 text-gray-400">
-                  Or sign up with
-                </span>
-              </div>
-            </div>
-
-            {/* Social Login Disabled */}
-            <div className="mt-6 grid grid-cols-2 gap-2">
-              <button
-                disabled
-                className="py-3 bg-gray-900 rounded-xl border border-gray-700 flex items-center justify-center text-gray-500 cursor-not-allowed"
-              >
-                <FaGithub className="w-5 h-5 mr-2" />
-                (Soon)
-              </button>
-              <button
-                disabled
-                className="py-3 bg-gray-900 rounded-xl border border-gray-700 flex items-center justify-center text-gray-500 cursor-not-allowed"
-              >
-                <FaGoogle className="text-xl mr-2" />
-                (Soon)
-              </button>
-            </div>
-          </div>
+          <p className="text-center mt-6 text-gray-400">
+            Already have an account?{" "}
+            <Link to="/login" className="text-purple-400 hover:underline">
+              Sign in
+            </Link>
+          </p>
         </div>
-
-        <p className="text-center mt-8 text-gray-400">
-          Already have an account?
-          <Link to="/login" className="text-purple-400 hover:underline">
-            Sign in
-          </Link>
-        </p>
       </div>
     </div>
   );

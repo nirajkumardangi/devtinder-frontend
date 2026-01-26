@@ -68,6 +68,24 @@ function App() {
             }
           />
 
+          <Route
+            path="profile-view"
+            element={
+              <Protected>
+                <Request />
+              </Protected>
+            }
+          />
+
+          <Route
+            path="message"
+            element={
+              <Protected>
+                <Request />
+              </Protected>
+            }
+          />
+
           <Route path="login" element={<Login />} />
           <Route path="signup" element={<Signup />} />
         </Route>

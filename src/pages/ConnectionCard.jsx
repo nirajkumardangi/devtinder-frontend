@@ -1,6 +1,7 @@
 import { MoreVertical, MessageSquare, User } from "lucide-react";
 import SkillTags from "../components/SkillTags";
 import { useState, useEffect, useRef } from "react";
+import { Link } from "react-router-dom";
 
 function ConnectionCard({ data }) {
   const [open, setOpen] = useState(false);
@@ -17,6 +18,9 @@ function ConnectionCard({ data }) {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  // Handle view profile
+  function handleViewProfile() {}
 
   return (
     <div className="bg-gray-800 rounded-2xl p-6 border border-gray-700 hover:border-purple-500/50 transition-all group flex flex-col">
@@ -61,17 +65,37 @@ function ConnectionCard({ data }) {
           </button>
 
           {open && (
-            <div className="absolute text-sm right-0 w-30 bg-gray-900 border border-gray-700 rounded-xl shadow-xl overflow-hidden z-10">
-              <button className="w-full text-left px-4 py-2 hover:bg-gray-800 text-gray-200">
+            <div
+              className="absolute right-0 z-10 w-40 bg-gray-900 border border-gray-700 
+               rounded-xl shadow-xl overflow-hidden text-sm"
+            >
+              <Link
+                to="/profile-view"
+                className="block w-full px-4 py-2 text-left text-gray-200 hover:bg-gray-800"
+              >
                 View Profile
-              </button>
-              <button className="w-full text-left px-4 py-2 hover:bg-gray-800 text-gray-200">
+              </Link>
+
+              <Link
+                to="/message"
+                className="block w-full px-4 py-2 text-left text-gray-200 hover:bg-gray-800"
+              >
                 Message
-              </button>
-              <button className="w-full text-left px-4 py-2 hover:bg-gray-800 text-gray-200">
-                Github
-              </button>
-              <button className="w-full text-left px-4 py-2 hover:bg-gray-800 text-red-400">
+              </Link>
+
+              <a
+                href="https://github.com/username"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block w-full px-4 py-2 text-left text-gray-200 hover:bg-gray-800"
+              >
+                GitHub
+              </a>
+
+              <button
+                onClick={handleRemove}
+                className="block w-full px-4 py-2 text-left text-red-400 hover:bg-gray-800"
+              >
                 Remove
               </button>
             </div>

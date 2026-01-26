@@ -13,7 +13,6 @@ import { BsCodeSlash } from "react-icons/bs";
 import { useSelector } from "react-redux";
 import SkillTags from "../components/SkillTags";
 import { useNavigate } from "react-router-dom";
-import defaultAvatar from "../assets/avatar.png";
 
 function Profile() {
   const { user, checked } = useSelector((s) => s.user);
@@ -52,7 +51,7 @@ function Profile() {
               <div className="w-32 h-32 rounded-full ring-4 ring-purple-500/60 p-[3px] bg-white/10">
                 <div className="w-full h-full rounded-full overflow-hidden">
                   <img
-                    src={avatar || defaultAvatar}
+                    src={avatar }
                     alt="profile"
                     className="w-full h-full object-cover object-center"
                   />

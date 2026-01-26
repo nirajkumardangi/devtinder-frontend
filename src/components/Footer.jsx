@@ -7,14 +7,19 @@ function Footer() {
 
   return (
     <footer
-      className={`bg-gray-900 border-t border-gray-800 pt-10 ${user ? "mb-12" : "mb-0"} md:mb-0 pb-6`}
+      className={`bg-gray-900 border-t text-sm font-medium border-gray-800 pt-10 ${user ? "mb-12" : "mb-0"} md:mb-0 pb-6`}
     >
       <div className="flex flex-col items-center justify-center gap-3 px-4 text-gray-300">
         <div className="flex flex-col md:flex-row items-center gap-2">
           <span>© 2024 DevTinder. Made with</span>
           <Heart size={16} className="text-red-500 fill-red-500" />
           <span>
-            by <span className="font-semibold">@NirajkrDangi</span>
+            by
+            <span className="font-semibold hover:text-blue-400">
+              <a href="https://github.com/nirajkumardangi/" target="_blank">
+                @NirajkrDangi
+              </a>
+            </span>
           </span>
         </div>
 
