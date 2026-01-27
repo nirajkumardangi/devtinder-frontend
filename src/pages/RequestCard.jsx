@@ -32,7 +32,7 @@ function RequestCard({ user, reviewRequest }) {
             <h3 className="font-bold text-lg">{name}</h3>
             <p className="text-purple-400 text-sm">{headline}</p>
             <div className="flex flex-wrap gap-2 mt-2">
-              <SkillTags skills={skills} btn />
+              <SkillTags skills={skills} size="small" btn />
             </div>
           </div>
         </div>

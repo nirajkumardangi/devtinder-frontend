@@ -1,51 +1,55 @@
 import axios from "axios";
 import { Search } from "lucide-react";
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
-import { addConnections } from "../features/connectionSlice";
+import { addConnections, removeConnections } from "../features/connectionSlice";
 import Loading from "../pages/Loading";
 import { BASE_URL } from "../utils/constants";
 import ConnectionCard from "./ConnectionCard";
 
 function Connections() {
   const dispatch = useDispatch();
-  const connections = useSelector((s) => s.connection);
+  const connections = useSelector((state) => state.connection);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
-  const [searchTerm, setSearchTerm] = useState("");
-  const [loader, setLoader] = useState(false);
+  console.log(connections);
+  
+
+  const fetchConnections = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const response = await axios.get(`${BASE_URL}/users/connections`, {
+        withCredentials: true,
+      });
+      dispatch(addConnections(response.data.data || []));
+    } catch (error) {
+      toast.error(
+        error.response?.data?.message || "Failed to fetch connections",
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  }, [dispatch]);
 
   useEffect(() => {
-    async function fetchConnections() {
-      setLoader(true);
-      try {
-        const res = await axios.get(`${BASE_URL}/users/connections`, {
-          withCredentials: true,
-        });
-        dispatch(addConnections(res?.data?.data || []));
-      } catch (error) {
-        toast.error(error.response?.data || "Failed to fetch connections");
-      } finally {
-        setLoader(false);
-      }
-    }
-
     fetchConnections();
-  }, [connections.length, dispatch]);
+  }, [fetchConnections]);
 
   const filteredConnections = useMemo(() => {
-    let filtered = connections;
+  if (!searchQuery.trim()) return connections;
+  
+  return connections.filter((connection) =>
+    connection.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+}, [connections, searchQuery]);
 
-    if (searchTerm.trim()) {
-      filtered = filtered.filter((item) =>
-        item?.name?.toLowerCase().includes(searchTerm.toLowerCase()),
-      );
-    }
+  const handleRemoveConnection = (id) => {
+    dispatch(removeConnections(id));
+  };
 
-    return filtered;
-  }, [connections, searchTerm]);
-
-  if (loader) return <Loading />;
+  if (isLoading) return <Loading />;
 
   return (
     <div className="min-h-screen py-8 px-4 bg-gray-900 text-white font-sans">
@@ -61,8 +65,8 @@ function Connections() {
               <input
                 type="text"
                 placeholder="Search connections..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full sm:w-64 pl-10 pr-4 py-2.5 bg-gray-800 border border-gray-700 rounded-xl focus:outline-none focus:border-purple-500 transition-all text-sm"
               />
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 w-4 h-4" />
@@ -71,8 +75,12 @@ function Connections() {
         </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredConnections.map((item) => (
-            <ConnectionCard key={item._id} data={item} />
+          {filteredConnections.map((connection) => (
+            <ConnectionCard
+              key={connection._id}
+              data={connection}
+              onRemoveConnection={handleRemoveConnection}
+            />
           ))}
         </div>
 

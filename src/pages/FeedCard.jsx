@@ -65,7 +65,7 @@ function FeedCard({ user, handleDislike, handleConnect }) {
 
         {/* --- Colorfull Skills Tags --- */}
         <div className="mt-3">
-          {skills?.length > 0 && <SkillTags skills={skills} size="large" />}
+          {skills?.length > 0 && <SkillTags skills={skills} size="small" />}
         </div>
 
         {/* --- Action Buttons --- */}

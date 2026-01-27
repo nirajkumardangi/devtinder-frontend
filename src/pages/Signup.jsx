@@ -163,8 +163,8 @@ function Signup() {
             {/* City + Country + Password */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {[
-                { name: "city", label: "City", placeholder: "Karachi" },
-                { name: "country", label: "Country", placeholder: "Pakistan" },
+                { name: "city", label: "City", placeholder: "Noida" },
+                { name: "country", label: "Country", placeholder: "Delhi" },
               ].map((input) => (
                 <div key={input.name}>
                   <label className="text-sm text-gray-300 mb-1 block">
@@ -196,7 +196,7 @@ function Signup() {
                   />
                   <button
                     type="button"
-                    className="absolute right-3 top-3 text-gray-400"
+                    className="absolute right-3 top-4 text-gray-400"
                     onClick={() => setShowPassword(!showPassword)}
                   >
                     {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}

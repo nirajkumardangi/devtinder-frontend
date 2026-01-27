@@ -14,10 +14,10 @@ function Footer() {
           <span>© 2024 DevTinder. Made with</span>
           <Heart size={16} className="text-red-500 fill-red-500" />
           <span>
-            by
+            by{" "} 
             <span className="font-semibold hover:text-blue-400">
               <a href="https://github.com/nirajkumardangi/" target="_blank">
-                @NirajkrDangi
+                @NirajKumarDangi
               </a>
             </span>
           </span>

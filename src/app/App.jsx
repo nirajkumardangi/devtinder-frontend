@@ -11,8 +11,10 @@ import Signup from "../pages/Signup";
 import Feed from "../pages/Feed";
 import Profile from "../pages/Profile";
 import Request from "../pages/Requests";
+import Chat from "../pages/Chat";
 import Connections from "../pages/Connections";
 import ProfileEdit from "../pages/ProfileEdit";
+import ConnectionProfileInfo from "../pages/ConnectionProfileInfo";
 
 function App() {
   const user = useSelector((store) => store.user);
@@ -60,28 +62,19 @@ function App() {
           />
 
           <Route
-            path="requests"
+            path="connections/:id"
             element={
               <Protected>
-                <Request />
+                <ConnectionProfileInfo />
               </Protected>
             }
           />
 
           <Route
-            path="profile-view"
+            path="messages/:id"
             element={
               <Protected>
-                <Request />
-              </Protected>
-            }
-          />
-
-          <Route
-            path="message"
-            element={
-              <Protected>
-                <Request />
+                <Chat />
               </Protected>
             }
           />
