@@ -11,12 +11,11 @@ import ConnectionCard from "./ConnectionCard";
 function Connections() {
   const dispatch = useDispatch();
   const connections = useSelector((state) => state.connection);
+
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  console.log(connections);
-  
-
+  // Fetch all connections
   const fetchConnections = useCallback(async () => {
     setIsLoading(true);
     try {
@@ -37,17 +36,30 @@ function Connections() {
     fetchConnections();
   }, [fetchConnections]);
 
-  const filteredConnections = useMemo(() => {
-  if (!searchQuery.trim()) return connections;
-  
-  return connections.filter((connection) =>
-    connection.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-}, [connections, searchQuery]);
-
-  const handleRemoveConnection = (id) => {
+  // Remove connection by id
+  async function removeConnection(id) {
+    setIsLoading(true);
     dispatch(removeConnections(id));
-  };
+    try {
+      await axios.delete(`${BASE_URL}/users/connections/${id}`, {
+        withCredentials: true,
+      });
+    } catch (error) {
+      toast.error(
+        error.response?.data?.message || "Failed to remove connection",
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  const filteredConnections = useMemo(() => {
+    if (!searchQuery.trim()) return connections;
+
+    return connections.filter((connection) =>
+      connection.name.toLowerCase().includes(searchQuery.toLowerCase()),
+    );
+  }, [connections, searchQuery]);
 
   if (isLoading) return <Loading />;
 
@@ -79,7 +91,7 @@ function Connections() {
             <ConnectionCard
               key={connection._id}
               data={connection}
-              onRemoveConnection={handleRemoveConnection}
+              onRemoveConnection={removeConnection}
             />
           ))}
         </div>

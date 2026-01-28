@@ -96,7 +96,7 @@ function ConnectionProfileInfo() {
 
             {/* Edit Button */}
             <button
-              onClick={() => navigate("/message:id")}
+              onClick={() => navigate(`/messages/${id}`)}
               className="md:ml-auto px-6 py-3 bg-purple-600 hover:bg-purple-700 rounded-xl font-medium transition-all flex items-center gap-2 cursor-pointer whitespace-nowrap"
             >
               <FaMessage /> Message
