@@ -15,6 +15,7 @@ import Chat from "../pages/Chat";
 import Connections from "../pages/Connections";
 import ProfileEdit from "../pages/ProfileEdit";
 import ConnectionProfileInfo from "../pages/ConnectionProfileInfo";
+import Requests from "../pages/Requests";
 
 function App() {
   const user = useSelector((store) => store.user);
@@ -75,6 +76,15 @@ function App() {
             element={
               <Protected>
                 <Chat />
+              </Protected>
+            }
+          />
+
+          <Route
+            path="requests"
+            element={
+              <Protected>
+                <Requests />
               </Protected>
             }
           />
