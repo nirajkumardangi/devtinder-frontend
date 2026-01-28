@@ -109,7 +109,7 @@ function Profile() {
                 <FaUser className="text-purple-500 text-lg" />
                 <h3 className="text-xl font-bold text-white">About Me</h3>
               </div>
-              <p className="text-slate-300 text-sm md:text-lg font-medium leading-relaxed">
+              <p className="text-slate-300 font-medium leading-relaxed">
                 {about || "No bio added yet."}
               </p>
             </div>
