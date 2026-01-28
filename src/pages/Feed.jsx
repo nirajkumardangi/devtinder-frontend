@@ -41,19 +41,18 @@ function Feed() {
         { withCredentials: true },
       );
     } catch (error) {
-      
       toast.error("dislike error!");
     }
   }
 
   async function handleConnect(id) {
     try {
+      dispatch(removeFeed(id));
       await axios.post(
         `${BASE_URL}/request/send/interested/${id}`,
         {},
         { withCredentials: true },
       );
-      dispatch(removeFeed(id));
     } catch (error) {
       console.log(error);
       toast.error("connect error!");
