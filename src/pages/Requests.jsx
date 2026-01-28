@@ -23,7 +23,6 @@ function Requests() {
         const res = await axios.get(`${BASE_URL}/users/requests`, {
           withCredentials: true,
         });
-
         dispatch(addRequest(res?.data?.data || []));
       } catch (error) {
         toast.error(error?.response?.data || "Failed to fetch requests");
@@ -36,14 +35,13 @@ function Requests() {
   }, [requests.length, dispatch]);
 
   const reviewRequest = async (status, id) => {
+    dispatch(removeRequest(id));
     try {
-      const res = await axios.post(
+      await axios.post(
         `${BASE_URL}/request/review/${status}/${id}`,
         {},
         { withCredentials: true },
       );
-
-      dispatch(removeRequest(id));
     } catch (err) {
       toast.error(err?.response?.data || "Failed to procesed");
     }
