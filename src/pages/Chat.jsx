@@ -13,6 +13,31 @@ function Chat() {
     { id: 1, fromMe: false, text: "Hey! Thanks for connecting 🚀" },
     { id: 2, fromMe: true, text: "Same here! Love the Go + Kafka stack 😁" },
     { id: 3, fromMe: false, text: "Yeah! microservices are fun!" },
+    {
+      id: 4,
+      fromMe: true,
+      text: "Totally! Curious — are you deploying to Kubernetes or ECS?",
+    },
+    {
+      id: 5,
+      fromMe: false,
+      text: "Kubernetes! We migrated last fall. Helm charts + ArgoCD for deploys.",
+    },
+    {
+      id: 6,
+      fromMe: true,
+      text: "Nice 😎 I've been wanting to try ArgoCD. Using GitOps must feel clean.",
+    },
+    {
+      id: 7,
+      fromMe: false,
+      text: "Super clean! Production rollbacks are way less scary now haha",
+    },
+    {
+      id: 12,
+      fromMe: true,
+      text: "Mostly Go now. Python still for ML tasks & quick scripts.",
+    },
   ];
 
   return (
