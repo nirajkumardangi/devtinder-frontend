@@ -20,6 +20,7 @@ function Navbar() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { user } = useSelector((store) => store.user);
+  const requests = useSelector((store) => store.request);
 
   const handleLogout = () => {
     dispatch(removeUser());
@@ -134,7 +135,7 @@ function Navbar() {
             to="/requests"
             icon={<Mail />}
             label="Requests"
-            badge
+            badge={requests.length}
             close={closeMobileMenu}
           />
           <MobileItem
@@ -158,7 +159,12 @@ function Navbar() {
         <div className="fixed bottom-0 left-0 right-0 z-50 md:hidden bg-gray-900 border-t border-gray-800 flex justify-around py-2">
           <BottomTab to="/feed" icon={<Flame />} label="Discover" />
           <BottomTab to="/connections" icon={<Heart />} label="Connect" />
-          <BottomTab to="/requests" icon={<Mail />} label="Requests" badge />
+          <BottomTab
+            to="/requests"
+            icon={<Mail />}
+            label="Requests"
+            badge={requests.length}
+          />
           <BottomTab to="/profile" icon={<User />} label="Profile" />
         </div>
       )}
@@ -177,7 +183,7 @@ function DesktopNavLink({ to, icon, label, badge }) {
     >
       {icon}
       {label}
-      {badge && <span className="w-2.5 h-2.5 bg-pink-500 rounded-full" />}
+      {badge > 0 && <span className="w-2.5 h-2.5 bg-pink-500 rounded-full" />}
     </Link>
   );
 }
@@ -196,8 +202,10 @@ function MobileItem({ to, icon, label, close, badge }) {
         {icon}
         {label}
       </div>
-      {badge && (
-        <span className="bg-pink-500 text-xs px-2 py-0.5 rounded-full">3</span>
+      {badge > 0 && (
+        <span className="bg-pink-500 text-xs px-2 py-0.5 rounded-full">
+          {badge}
+        </span>
       )}
     </Link>
   );
@@ -214,7 +222,7 @@ function BottomTab({ to, icon, label, badge }) {
     >
       <div className="relative">
         {icon}
-        {badge && (
+        {badge > 0 && (
           <span className="absolute top-0 right-0 w-2.5 h-2.5 bg-pink-500 rounded-full" />
         )}
       </div>
