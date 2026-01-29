@@ -1,6 +1,6 @@
 import axios from "axios";
-import { Flame, Inbox } from "lucide-react";
-import { useEffect, useState } from "react";
+import { Flame, Inbox, RefreshCw } from "lucide-react";
+import { useEffect, useState, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -14,9 +14,10 @@ function Requests() {
   const requests = useSelector((s) => s.request);
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    async function fetchReceived() {
-      if (requests.length > 0) return;
+  const fetchReceived = useCallback(
+    async (isRefresh = false) => {
+      // Only fetch if empty or if user explicitly requested refresh
+      if (requests.length > 0 && !isRefresh) return;
 
       setLoading(true);
       try {
@@ -29,73 +30,99 @@ function Requests() {
       } finally {
         setLoading(false);
       }
-    }
+    },
+    [requests.length, dispatch],
+  );
 
+  useEffect(() => {
     fetchReceived();
-  }, [requests.length, dispatch]);
+  }, [fetchReceived]);
 
+  // Inside Requests.js
   const reviewRequest = async (status, id) => {
     try {
+      // 1. Remove from local Redux state IMMEDIATELY
+      // Ensure 'id' here is the 'req._id'
+      dispatch(removeRequest(id));
+
+      // 2. Make the API call
       await axios.post(
         `${BASE_URL}/request/review/${status}/${id}`,
         {},
         { withCredentials: true },
       );
-      dispatch(removeRequest(id));
+
+      toast.success(
+        `Request ${status === "accepted" ? "Accepted" : "Declined"}`,
+      );
     } catch (err) {
-      toast.error(err?.response?.data || "Failed to procesed");
+      toast.error("Action failed. Syncing list...");
+      fetchReceived(true);
     }
   };
 
-  if (loading) return <Loading />;
+  if (loading && requests.length === 0) return <Loading />;
 
   return (
-    <section id="page-requests" className="py-8 px-4">
+    <section className="min-h-screen bg-[#0B101B] py-12 px-4 text-slate-200">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-10">
           <div>
-            <h1 className="text-2xl font-bold">Connection Requests</h1>
-            <p className="text-gray-400">
-              Developers who want to connect with you
+            <h1 className="text-3xl font-bold tracking-tight text-white mb-1">
+              Incoming Requests
+            </h1>
+            <p className="text-slate-400">
+              Manage developers looking to collaborate with you.
             </p>
           </div>
-          <span className="px-3 py-1 bg-purple-500/20 text-purple-400 rounded-full text-sm font-medium">
-            {requests.length} pending
-          </span>
+
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => fetchReceived(true)}
+              className="p-2.5 bg-slate-800 hover:bg-slate-700 rounded-xl transition-colors text-slate-400 cursor-pointer"
+              title="Refresh List"
+            >
+              <RefreshCw size={18} className={loading ? "animate-spin" : ""} />
+            </button>
+            <span className="px-4 py-1.5 bg-purple-500/10 border border-purple-500/20 text-purple-400 rounded-full text-xs font-bold uppercase tracking-widest">
+              {requests.length} Pending
+            </span>
+          </div>
         </div>
 
-        {/* Empty */}
-        {requests.length === 0 && (
-          <div className="text-center py-16">
-            <div className="w-24 h-24 bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-6">
-              <Inbox size={48} className="text-gray-600" />
+        {/* Empty State */}
+        {requests.length === 0 && !loading && (
+          <div className="bg-slate-900/40 border border-slate-800 rounded-[2.5rem] py-20 text-center animate-in fade-in zoom-in duration-500">
+            <div className="w-20 h-20 bg-slate-800 rounded-3xl flex items-center justify-center mx-auto mb-6 rotate-12">
+              <Inbox size={40} className="text-slate-600" />
             </div>
-            <h3 className="text-xl font-bold mb-2">No pending requests</h3>
-            <p className="text-gray-400 mb-6">
-              Start swiping to get more connection requests!
+            <h3 className="text-2xl font-bold text-white mb-2">
+              Inbox is Clean
+            </h3>
+            <p className="text-slate-400 mb-8 max-w-xs mx-auto">
+              You've cleared all requests. Start swiping on the feed to find
+              more matches!
             </p>
             <Link to="/">
-              <button className="px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl font-medium hover:opacity-90 transition-all flex items-center gap-2 mx-auto cursor-pointer">
+              <button className="px-8 py-3.5 bg-purple-600 hover:bg-purple-500 rounded-2xl font-bold transition-all flex items-center gap-2 mx-auto shadow-lg shadow-purple-900/20 active:scale-95">
                 <Flame size={20} />
-                Go to Feed
+                Explore Developers
               </button>
             </Link>
           </div>
         )}
 
-        {/* List */}
-        {requests.length > 0 && (
-          <div className="space-y-4">
-            {requests.map((req) => (
-              <RequestCard
-                key={req._id}
-                user={req}
-                reviewRequest={reviewRequest}
-              />
-            ))}
-          </div>
-        )}
+        {/* Request List */}
+        <div className="grid gap-4">
+          {requests.map((req) => (
+            <RequestCard
+              key={req._id}
+              user={req}
+              reviewRequest={reviewRequest}
+            />
+          ))}
+        </div>
       </div>
     </section>
   );

@@ -1,96 +1,91 @@
 import axios from "axios";
 import FeedCard from "./FeedCard";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { BASE_URL } from "../utils/constants";
 import { toast } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
 import { addFeed, removeFeed } from "../features/feedSlice";
 import Loading from "./Loading";
+import { Sparkles } from "lucide-react";
 
 function Feed() {
   const dispatch = useDispatch();
-  const data = useSelector((store) => store.feed);
+  const feedData = useSelector((store) => store.feed);
   const [loader, setLoader] = useState(false);
+  const isFetching = useRef(false); // Prevent double-fetch in StrictMode
+
+  const fetchFeed = useCallback(async () => {
+    if (isFetching.current) return;
+    isFetching.current = true;
+    setLoader(true);
+
+    try {
+      const res = await axios.get(`${BASE_URL}/users/feed`, {
+        withCredentials: true,
+      });
+      dispatch(addFeed(res?.data?.data || []));
+    } catch (error) {
+      toast.error(error.response?.data || "Failed to load feed");
+    } finally {
+      setLoader(false);
+      isFetching.current = false;
+    }
+  }, [dispatch]);
 
   useEffect(() => {
-    async function fetchFeed() {
-      setLoader(true);
-      try {
-        const res = await axios.get(BASE_URL + "/users/feed", {
-          withCredentials: true,
-        });
-
-        dispatch(addFeed(res?.data?.data));
-      } catch (error) {
-        toast.error(error.response?.data || "Error while fetching feed");
-        console.error("Feed Error:", error.response?.data);
-      } finally {
-        setLoader(false);
-      }
+    if (!feedData || feedData.length === 0) {
+      fetchFeed();
     }
+  }, [fetchFeed, feedData?.length]);
 
-    fetchFeed();
-  }, []);
-
-  async function handleDislike(id) {
+  const handleAction = async (id, status) => {
     try {
+      // 1. Remove from Redux immediately (Optimistic UI)
       dispatch(removeFeed(id));
+
+      // 2. Call API in background
       await axios.post(
-        `${BASE_URL}/request/send/ignored/${id}`,
+        `${BASE_URL}/request/send/${status}/${id}`,
         {},
         { withCredentials: true },
       );
     } catch (error) {
-      toast.error("dislike error!");
+      toast.error("Action failed. Please refresh.");
+      fetchFeed(); // Refresh to get data back on error
     }
-  }
+  };
 
-  async function handleConnect(id) {
-    try {
-      dispatch(removeFeed(id));
-      await axios.post(
-        `${BASE_URL}/request/send/interested/${id}`,
-        {},
-        { withCredentials: true },
-      );
-    } catch (error) {
-      console.log(error);
-      toast.error("connect error!");
-    }
-  }
+  if (loader && (!feedData || feedData.length === 0)) return <Loading />;
 
   return (
-    <>
-      {loader && <Loading />}
-      <div className="flex flex-col items-center justify-center min-h-[calc(100vh-140px)] py-8 px-4">
-        {data.length > 0 ? (
+    <div className="relative min-h-[calc(100vh-80px)] w-full flex flex-col items-center justify-center overflow-hidden bg-[#0B101B]">
+      {feedData && feedData.length > 0 ? (
+        <div className="relative w-full max-w-sm px-4 h-[600px] flex items-center justify-center">
+          {/* Key must be unique to the user, not index */}
           <FeedCard
-            user={data[0]}
-            handleDislike={handleDislike}
-            handleConnect={handleConnect}
+            key={feedData[0]._id}
+            user={feedData[0]}
+            onSwipeLeft={(id) => handleAction(id, "ignored")}
+            onSwipeRight={(id) => handleAction(id, "interested")}
           />
-        ) : (
-          !loader &&
-          data.length === 0 && (
-            <h1 className="text-center text-purple-600 text-2xl font-bold">
-              Feed Empty
-            </h1>
-          )
-        )}
-        {data.length > 0 && (
-          <div className="text-center mt-8 text-gray-500 text-xs font-medium uppercase tracking-widest opacity-60">
-            <span className="px-2 py-1 bg-gray-800 rounded mr-2 border border-gray-700">
-              ←
-            </span>
-            Dislike
-            <span className="px-2 py-1 bg-gray-800 rounded mx-2 border border-gray-700">
-              →
-            </span>
-            Connect
+        </div>
+      ) : (
+        <div className="text-center animate-in fade-in zoom-in duration-500">
+          <div className="bg-purple-500/10 p-6 rounded-full inline-block mb-4">
+            <Sparkles className="text-purple-500 w-12 h-12" />
           </div>
-        )}
-      </div>
-    </>
+          <h1 className="text-2xl font-bold text-white mb-2">
+            You're All Caught Up!
+          </h1>
+          <button
+            onClick={fetchFeed}
+            className="px-6 py-2 bg-purple-600 hover:bg-purple-500 rounded-full transition-all text-white font-bold"
+          >
+            Refresh Feed
+          </button>
+        </div>
+      )}
+    </div>
   );
 }
 

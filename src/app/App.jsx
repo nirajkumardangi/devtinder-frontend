@@ -1,16 +1,15 @@
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 
 import Layout from "../components/Layout";
-
 import Protected from "./Protected";
 
+// Pages
 import Home from "../pages/Home";
 import Login from "../pages/Login";
 import Signup from "../pages/Signup";
 import Feed from "../pages/Feed";
 import Profile from "../pages/Profile";
-import Request from "../pages/Requests";
 import Chat from "../pages/Chat";
 import Connections from "../pages/Connections";
 import ProfileEdit from "../pages/ProfileEdit";
@@ -18,79 +17,35 @@ import ConnectionProfileInfo from "../pages/ConnectionProfileInfo";
 import Requests from "../pages/Requests";
 
 function App() {
-  const user = useSelector((store) => store.user);
+  const { user } = useSelector((store) => store.user);
 
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Layout />}>
-          <Route index element={!user.data ? <Home /> : <Feed />} />
-
+          {/* Public or Conditional Home */}
           <Route
-            path="feed"
-            element={
-              <Protected>
-                <Feed />
-              </Protected>
-            }
+            index
+            element={!user ? <Home /> : <Navigate to="/feed" replace />}
           />
 
-          <Route
-            path="profile"
-            element={
-              <Protected>
-                <Profile />
-              </Protected>
-            }
-          />
+          {/* Protected Routes Group */}
+          <Route element={<Protected />}>
+            <Route path="feed" element={<Feed />} />
+            <Route path="profile" element={<Profile />} />
+            <Route path="profile-edit" element={<ProfileEdit />} />
+            <Route path="connections" element={<Connections />} />
+            <Route path="connections/:id" element={<ConnectionProfileInfo />} />
+            <Route path="messages/:id" element={<Chat />} />
+            <Route path="requests" element={<Requests />} />
+          </Route>
 
-          <Route
-            path="profile-edit"
-            element={
-              <Protected>
-                <ProfileEdit />
-              </Protected>
-            }
-          />
-
-          <Route
-            path="connections"
-            element={
-              <Protected>
-                <Connections />
-              </Protected>
-            }
-          />
-
-          <Route
-            path="connections/:id"
-            element={
-              <Protected>
-                <ConnectionProfileInfo />
-              </Protected>
-            }
-          />
-
-          <Route
-            path="messages/:id"
-            element={
-              <Protected>
-                <Chat />
-              </Protected>
-            }
-          />
-
-          <Route
-            path="requests"
-            element={
-              <Protected>
-                <Requests />
-              </Protected>
-            }
-          />
-
+          {/* Auth Routes */}
           <Route path="login" element={<Login />} />
           <Route path="signup" element={<Signup />} />
+
+          {/* Catch All */}
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Route>
       </Routes>
     </BrowserRouter>

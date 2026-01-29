@@ -1,15 +1,20 @@
 import { useSelector } from "react-redux";
-import { Navigate } from "react-router-dom";
+import { Navigate, Outlet, useLocation } from "react-router-dom";
 import Loading from "../pages/Loading";
 
-function Protected({ children }) {
+function Protected() {
   const { user, checked } = useSelector((s) => s.user);
+  const location = useLocation();
 
-  // Wait until checked becomes true
+  // If we haven't checked the token/session yet, show global loader
   if (!checked) return <Loading />;
 
-  // If user not logged in
-  return user ? children : <Navigate to="/login" replace />;
+  // Use Outlet to render the child routes defined in App.jsx
+  return user ? (
+    <Outlet />
+  ) : (
+    <Navigate to="/login" state={{ from: location }} replace />
+  );
 }
 
 export default Protected;

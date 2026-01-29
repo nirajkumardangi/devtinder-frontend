@@ -1,179 +1,213 @@
 import axios from "axios";
-import { useState } from "react";
-import { Mail, Lock, Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Loader2, Lock, Mail, Rocket } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 import { FaGithub, FaGoogle } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
-import { Link, useNavigate, Navigate } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
 import { addUser } from "../features/userSlice";
-import { BASE_URL } from "../utils/constants";
 import Loading from "../pages/Loading";
+import { BASE_URL } from "../utils/constants";
 
 function Login() {
-  const {
-    user,
-    checked,
-    loading: authLoading,
-  } = useSelector((store) => store.user);
-
-  const [email, setEmail] = useState("niraj@gmail.com");
-  const [password, setPassword] = useState("Niraj@123");
-  const [showPassword, setShowPassword] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState("");
-
+  const { user, checked } = useSelector((store) => store.user);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const emailRef = useRef(null);
 
-  // Prevent flicker if auth is being checked
+  const [formData, setFormData] = useState({
+    email: "niraj@gmail.com",
+    password: "Niraj@123",
+  });
+  const [showPassword, setShowPassword] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [statusMessage, setStatusMessage] = useState({ type: "", text: "" });
+
+  // Auto-focus email on mount
+  useEffect(() => {
+    if (checked && !user) emailRef.current?.focus();
+  }, [checked, user]);
+
   if (!checked) return <Loading />;
-
-  // If user is already logged in → redirect
   if (user) return <Navigate to="/feed" replace />;
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+    if (statusMessage.text) setStatusMessage({ type: "", text: "" });
+  };
+
+  const validateForm = () => {
+    if (!formData.email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
+      setStatusMessage({
+        type: "error",
+        text: "Please enter a valid email address",
+      });
+      return false;
+    }
+    if (formData.password.length < 6) {
+      setStatusMessage({
+        type: "error",
+        text: "Password must be at least 6 characters",
+      });
+      return false;
+    }
+    return true;
+  };
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    setError("");
+    if (!validateForm()) return;
 
-    // Basic validations
-    if (!email.includes("@")) {
-      return setError("Please enter a valid email address");
-    }
-
-    if (password.length < 6) {
-      return setError("Password must be at least 6 characters long");
-    }
-
-    setSubmitting(true);
-
+    setIsSubmitting(true);
     try {
-      const res = await axios.post(
-        `${BASE_URL}/auth/login`,
-        { email, password },
-        { withCredentials: true },
-      );
+      const res = await axios.post(`${BASE_URL}/auth/login`, formData, {
+        withCredentials: true,
+      });
 
-      toast.success("login successful!", { autoClose: 1500 });
+      toast.success("Welcome back!");
       dispatch(addUser(res?.data?.user));
-      navigate("/feed", { replace: true });
+      navigate("/feed", replace);
     } catch (err) {
-      const message =
+      const msg =
         err?.response?.data?.message ||
-        err?.message ||
-        "Unable to login right now!";
-      setError(message);
+        "Invalid credentials. Please try again.";
+      setStatusMessage({ type: "error", text: msg });
     } finally {
-      setSubmitting(false);
+      setIsSubmitting(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center py-4 px-4 bg-gray-900 text-white font-sans">
-      <div className="w-full max-w-96">
-        <div className="bg-gray-800 rounded-2xl p-8 border border-gray-700 shadow-2xl">
-          <form onSubmit={handleLogin} className="space-y-6">
-            {error && (
-              <div className="p-3 bg-red-500/10 border border-red-500/50 rounded-lg text-red-400 text-sm text-center">
-                {error}
+    <div className="min-h-screen flex items-center justify-center py-12 px-4 bg-[#0B101B] font-sans">
+      <div className="w-full max-w-md animate-in fade-in zoom-in duration-500">
+        {/* Logo/Brand Section */}
+        <div className="text-center mb-8">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-tr from-purple-600 to-pink-600 mb-4 shadow-xl shadow-purple-500/20">
+            <Rocket className="text-white w-8 h-8" />
+          </div>
+          <h1 className="text-3xl font-black text-white tracking-tight">
+            DevTinder
+          </h1>
+          <p className="text-slate-400 mt-2">
+            Connecting developers, one commit at a time.
+          </p>
+        </div>
+
+        <div className="bg-slate-900/50 backdrop-blur-xl rounded-[1.5rem] p-8 border border-slate-800 shadow-2xl shadow-black/50">
+          <form onSubmit={handleLogin} className="space-y-5">
+            {statusMessage.text && (
+              <div
+                className={`p-4 rounded-xl border text-sm text-center animate-shake ${
+                  statusMessage.type === "error"
+                    ? "bg-red-500/10 border-red-500/20 text-red-400"
+                    : "bg-emerald-500/10 border-emerald-500/20 text-emerald-400"
+                }`}
+              >
+                {statusMessage.text}
               </div>
             )}
 
-            {/* Email */}
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
+            <div className="space-y-2">
+              <label className="text-xs font-bold uppercase tracking-widest text-slate-500 ml-1">
                 Email Address
               </label>
-              <div className="relative">
+              <div className="relative group mt-1">
                 <input
+                  ref={emailRef}
+                  name="email"
                   type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-full px-4 py-3 pl-12 bg-gray-900 border border-gray-700 rounded-xl focus:outline-none focus:border-purple-500 transition-all text-white placeholder-gray-500"
-                  placeholder="john@example.com"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  className="w-full px-5 py-3.5 pl-12 bg-slate-950 border border-slate-800 rounded-2xl focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 outline-none transition-all text-white placeholder-slate-600"
+                  placeholder="name@company.com"
                   required
                 />
-                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 w-5 h-5" />
+                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-purple-500 transition-colors w-5 h-5" />
               </div>
             </div>
 
-            {/* Password */}
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
-                Password
-              </label>
-              <div className="relative">
+            <div className="space-y-2">
+              <div className="flex justify-between items-center ml-1">
+                <label className="text-xs font-bold uppercase tracking-widest text-slate-500">
+                  Password
+                </label>
+                {/* <Link
+                  to="/forgot"
+                  className="text-xs text-purple-400 hover:text-purple-300 transition-colors"
+                >
+                  Forgot?
+                </Link> */}
+              </div>
+              <div className="relative group mt-1">
                 <input
+                  name="password"
                   type={showPassword ? "text" : "password"}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full px-4 py-3 pl-12 pr-12 bg-gray-900 border border-gray-700 rounded-xl focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all text-white placeholder-gray-500"
+                  value={formData.password}
+                  onChange={handleInputChange}
+                  className="w-full px-5 py-3.5 pl-12 pr-12 bg-slate-950 border border-slate-800 rounded-2xl focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 outline-none transition-all text-white placeholder-slate-600"
                   placeholder="••••••••"
                   required
                 />
-                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 w-5 h-5" />
-
+                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-purple-500 transition-colors w-5 h-5" />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white text-xs cursor-pointer"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white transition-colors cursor-pointer"
                 >
                   {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
               </div>
             </div>
 
-            {/* Submit Button */}
             <button
               type="submit"
-              disabled={submitting}
-              className={`w-full mt-4 py-3.5 rounded-xl font-bold text-white transition-all transform hover:scale-[1.02] shadow-lg shadow-purple-500/25 cursor-pointer ${
-                submitting
-                  ? "bg-gray-700 opacity-70 cursor-not-allowed"
-                  : "bg-gradient-to-r from-purple-600 to-pink-600 hover:opacity-90"
-              }`}
+              disabled={isSubmitting}
+              className="w-full py-4 cursor-pointer rounded-2xl font-black text-white bg-gradient-to-r from-purple-600 to-pink-600 hover:scale-[1.02] active:scale-[0.98] transition-all shadow-lg shadow-purple-500/25 disabled:opacity-50 disabled:hover:scale-100 flex items-center justify-center gap-2"
             >
-              {submitting ? "Signing in..." : "Sign In"}
+              {isSubmitting ? (
+                <Loader2 className="w-5 h-5 animate-spin" />
+              ) : (
+                "Sign In to Account"
+              )}
             </button>
           </form>
 
-          {/* Divider */}
-          <div className="mt-8">
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-700"></div>
-              </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="px-4 bg-gray-800 text-gray-400">
-                  Or continue with
-                </span>
-              </div>
-            </div>
+          {/* Social Divider */}
+          <div className="mt-10 flex items-center gap-4">
+            <div className="h-px flex-1 bg-slate-800"></div>
+            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em]">
+              Social Connect
+            </span>
+            <div className="h-px flex-1 bg-slate-800"></div>
+          </div>
 
-            {/* Social Login */}
-            <div className="mt-6 grid grid-cols-2 gap-2">
-              <button
-                disabled
-                className="py-3 bg-gray-900 rounded-xl border border-gray-700 flex items-center justify-center text-gray-500 cursor-not-allowed"
-              >
-                <FaGithub className="w-5 h-5 mr-2" />
-                (Soon)
-              </button>
-              <button
-                disabled
-                className="py-3 bg-gray-900 rounded-xl border border-gray-700 flex items-center justify-center text-gray-500 cursor-not-allowed"
-              >
-                <FaGoogle className="text-xl mr-2" />
-                (Soon)
-              </button>
-            </div>
+          <div className="mt-6 grid grid-cols-2 gap-4">
+            <button
+              disabled
+              className="py-3 bg-slate-950 border border-slate-800 rounded-xl flex items-center justify-center text-slate-600 cursor-not-allowed group transition-all"
+            >
+              <FaGithub className="w-5 h-5 mr-2" />
+              <span className="text-xs font-bold">GitHub</span>
+            </button>
+            <button
+              disabled
+              className="py-3 bg-slate-950 border border-slate-800 rounded-xl flex items-center justify-center text-slate-600 cursor-not-allowed group transition-all"
+            >
+              <FaGoogle className="w-5 h-5 mr-2" />
+              <span className="text-xs font-bold">Google</span>
+            </button>
           </div>
         </div>
 
-        <p className="text-center mt-8 text-gray-400">
-          Don't have an account?
-          <Link to="/signup" className="text-purple-400 hover:underline">
-            Sign up
+        <p className="text-center mt-8 text-slate-500 text-sm">
+          New to the community?{" "}
+          <Link
+            to="/signup"
+            className="text-white font-bold hover:text-purple-400 transition-colors"
+          >
+            Join DevTinder
           </Link>
         </p>
       </div>

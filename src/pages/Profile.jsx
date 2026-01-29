@@ -7,7 +7,7 @@ import {
   FaEdit,
   FaUser,
   FaCamera,
-  FaLink,
+  FaExternalLinkAlt,
 } from "react-icons/fa";
 import { BsCodeSlash } from "react-icons/bs";
 import { useSelector } from "react-redux";
@@ -16,21 +16,21 @@ import { useNavigate } from "react-router-dom";
 
 function Profile() {
   const { user, checked } = useSelector((s) => s.user);
-  const requests = useSelector((s) => s.request);
-  const connections = useSelector((s) => s.connection);
+  const requests = useSelector((s) => s.request) || [];
+  const connections = useSelector((s) => s.connection) || [];
   const navigate = useNavigate();
 
-  if (!checked) return <Loading />;
-
-  // If somehow no user exists
-  if (!user) return <Loading />;
+  // Handle loading or missing user state
+  if (!checked || !user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#0B101B]">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-purple-500"></div>
+      </div>
+    );
+  }
 
   const { name, avatar, about, headline, location, skills, createdAt, social } =
     user;
-
-  const city = location?.city || "";
-  const country = location?.country || "";
-
   const joinedDate = new Date(createdAt).toLocaleDateString("en-US", {
     year: "numeric",
     month: "short",
@@ -39,179 +39,178 @@ function Profile() {
   const hasSocial = social?.github || social?.linkedin || social?.website;
 
   return (
-    <div className="w-full min-h-screen bg-[#0B101B] py-10 px-4 font-sans text-slate-200">
-      <div className="max-w-4xl mx-auto space-y-6">
-        {/* ================= HEADER CARD ================= */}
-        <div className="bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-3xl p-8 mb-8 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-purple-500/20 rounded-full blur-3xl"></div>
+    <div className="w-full min-h-screen bg-[#0B101B] py-12 px-4 font-sans text-slate-200">
+      <div className="max-w-5xl mx-auto space-y-8">
+        {/* ================= HERO SECTION ================= */}
+        <div className="relative group overflow-hidden bg-slate-900/40 border border-slate-800 rounded-[2.5rem] p-8 md:p-12 transition-all hover:border-purple-500/30">
+          {/* Animated Background Glow */}
+          <div className="absolute -top-24 -right-24 w-96 h-96 bg-purple-600/10 rounded-full blur-[100px] pointer-events-none group-hover:bg-purple-600/20 transition-all duration-700"></div>
 
-          <div className="relative flex flex-col md:flex-row items-center gap-6">
-            {/* Avatar */}
+          <div className="relative flex flex-col md:flex-row items-center md:items-end gap-8">
+            {/* Avatar with Status Ring */}
             <div className="relative">
-              <div className="w-32 h-32 rounded-full ring-4 ring-purple-500/60 p-[3px] bg-white/10">
-                <div className="w-full h-full rounded-full overflow-hidden">
+              <div className="w-40 h-40 rounded-full ring-4 ring-purple-500/20 p-1.5 bg-gradient-to-tr from-purple-500 to-pink-500">
+                <div className="w-full h-full rounded-full overflow-hidden bg-slate-900 border-4 border-[#0B101B]">
                   <img
-                    src={avatar }
+                    src={avatar || `https://ui-avatars.com/api/?name=${name}`}
                     alt="profile"
-                    className="w-full h-full object-cover object-center"
+                    className="w-full h-full object-cover"
                   />
                 </div>
               </div>
-
-              <button className="absolute bottom-1 right-1 w-10 h-10 bg-purple-600 rounded-full flex items-center justify-center hover:bg-purple-700 transition-all cursor-pointer shadow-lg">
-                <FaCamera className="text-white" size={18} />
+              <button
+                onClick={() => navigate("/profile-edit")}
+                className="absolute bottom-2 right-2 w-10 h-10 bg-slate-800 hover:bg-purple-600 border border-slate-700 rounded-full flex items-center justify-center transition-all shadow-xl cursor-pointer"
+              >
+                <FaCamera size={16} />
               </button>
             </div>
 
             {/* Profile Info */}
-            <div className="text-center md:text-left">
-              <h1 className="text-3xl font-bold mb-1">{name}</h1>
-              <p className="text-purple-400 text-base mb-2">{headline}</p>
-              <div className="flex flex-wrap justify-center md:justify-start font-medium gap-x-4 gap-y-1 text-gray-400 whitespace-nowrap">
-                {(city || country) && (
-                  <span className="flex items-center gap-1 hover:text-white transition-all">
-                    <FaMapMarkerAlt /> {`${city},  ${country}`}
+            <div className="flex-1 text-center md:text-left">
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                  <h1 className="text-4xl font-extrabold text-white tracking-tight mb-2 uppercase italic">
+                    {name}
+                  </h1>
+                  <p className="text-xl text-purple-400 font-medium mb-4">
+                    {headline || "Developer"}
+                  </p>
+                </div>
+                <button
+                  onClick={() => navigate("/profile-edit")}
+                  className="px-6 py-2.5 bg-white text-slate-900 hover:bg-purple-100 rounded-full font-bold transition-all flex items-center justify-center gap-2 transform active:scale-95 cursor-pointer"
+                >
+                  <FaEdit /> Edit Profile
+                </button>
+              </div>
+
+              <div className="flex flex-wrap justify-center md:justify-start gap-6 text-slate-400 text-sm font-medium border-t border-slate-800/50 pt-4">
+                {location && (
+                  <span className="flex items-center gap-2">
+                    <FaMapMarkerAlt className="text-purple-500" />{" "}
+                    {location.city}, {location.country}
                   </span>
                 )}
-                <span className="flex items-center gap-1 hover:text-white transition-all">
-                  <FaCalendar /> Joined {joinedDate}
+                <span className="flex items-center gap-2">
+                  <FaCalendar className="text-purple-500" /> Member since{" "}
+                  {joinedDate}
                 </span>
-                {hasSocial && (
+                {social?.github && (
                   <a
-                    href={`http://github.com/${social.github}`}
+                    href={`https://github.com/${social.github}`}
                     target="_blank"
+                    rel="noreferrer"
+                    className="flex items-center gap-2 hover:text-white transition-colors"
                   >
-                    <span className="flex items-center gap-1 hover:text-blue-400 cursor-pointer transition-all">
-                      <FaLink /> http://github.com/{social.github}
-                    </span>
+                    <FaGithub /> github.com/{social.github}
                   </a>
                 )}
               </div>
             </div>
-
-            {/* Edit Button */}
-            <button
-              onClick={() => navigate("/profile-edit")}
-              className="md:ml-auto px-6 py-3 bg-gray-800 hover:bg-gray-700 rounded-xl font-medium transition-all flex items-center gap-2 cursor-pointer whitespace-nowrap"
-            >
-              <FaEdit /> Edit Profile
-            </button>
           </div>
         </div>
 
-        {/* ================= MAIN CONTENT GRID ================= */}
-        <div className="grid md:grid-cols-3 gap-8">
-          {/* --- LEFT COLUMN (2/3 width) --- */}
-          <div className="md:col-span-2 space-y-8">
-            {/* ABOUT ME */}
-            <div className="bg-[#161E2D] border border-slate-800 rounded-2xl p-6 shadow-sm">
-              <div className="flex items-center gap-3 mb-4">
-                <FaUser className="text-purple-500 text-lg" />
-                <h3 className="text-xl font-bold text-white">About Me</h3>
+        {/* ================= CONTENT GRID ================= */}
+        <div className="grid lg:grid-cols-12 gap-8">
+          {/* LEFT: About & Skills (8 Cols) */}
+          <div className="lg:col-span-8 space-y-8">
+            {/* About Card */}
+            <div className="bg-slate-900/40 border border-slate-800 rounded-3xl p-8 transition-all hover:bg-slate-900/60">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="p-2 bg-purple-500/10 rounded-lg">
+                  <FaUser className="text-purple-500" />
+                </div>
+                <h3 className="text-xl font-bold text-white uppercase tracking-wider">
+                  About Bio
+                </h3>
               </div>
-              <p className="text-slate-300 font-medium leading-relaxed">
-                {about || "No bio added yet."}
+              <p className="text-slate-300 text-lg leading-relaxed">
+                {about ||
+                  "This developer prefers to keep their story a mystery..."}
               </p>
             </div>
 
-            {/* SKILLS & TECHNOLOGIES */}
-            <div className="bg-[#161E2D] border border-slate-800 rounded-2xl p-6 shadow-sm">
-              <div className="flex items-center gap-3 mb-6">
-                <BsCodeSlash className="text-purple-500 text-xl font-bold" />
-                <h3 className="text-xl font-bold text-white">
-                  Skills & Technologies
+            {/* Skills Card */}
+            <div className="bg-slate-900/40 border border-slate-800 rounded-3xl p-8 transition-all hover:bg-slate-900/60">
+              <div className="flex items-center gap-3 mb-8">
+                <div className="p-2 bg-pink-500/10 rounded-lg">
+                  <BsCodeSlash className="text-pink-500 text-xl" />
+                </div>
+                <h3 className="text-xl font-bold text-white uppercase tracking-wider">
+                  Tech Stack
                 </h3>
               </div>
-
-              {skills.length > 0 ? (
-                <div className="flex flex-wrap gap-3 font-medium">
-                  <SkillTags skills={skills} size="medium" btn />
+              {skills?.length > 0 ? (
+                <div className="flex flex-wrap gap-4">
+                  <SkillTags skills={skills} size="large" />
                 </div>
               ) : (
-                <p className="text-gray-500 italic">No skills added yet.</p>
+                <p className="text-slate-500 italic">No skills listed yet.</p>
               )}
             </div>
           </div>
 
-          {/* --- RIGHT COLUMN (1/3 width) --- */}
-          <div className="space-y-8">
-            {/* PROFILE STATS */}
-            <div className="bg-[#161E2D] border border-slate-800 rounded-2xl p-6 shadow-sm">
-              <h3 className="font-bold mb-5 text-white text-lg">
-                Profile Stats
+          {/* RIGHT: Stats & Links (4 Cols) */}
+          <div className="lg:col-span-4 space-y-8">
+            {/* Stats Card */}
+            <div className="bg-gradient-to-br from-slate-800/50 to-slate-900/50 border border-slate-800 rounded-3xl p-6 shadow-2xl">
+              <h3 className="text-sm font-bold text-slate-500 uppercase tracking-[0.2em] mb-6">
+                Network Insights
               </h3>
-              <div className="space-y-3 text-base font-medium">
-                <div className="flex justify-between items-center py-1">
-                  <span className="text-slate-400">Profile Views</span>
-                  <span className="text-purple-400 text-base">
-                    {connections.length + requests.length}
-                  </span>
-                </div>
-                <div className="flex justify-between items-center py-1">
-                  <span className="text-slate-400">Connections</span>
-                  <span className="text-green-400 text-base">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="bg-slate-950/50 p-4 rounded-2xl border border-slate-800">
+                  <p className="text-2xl font-black text-white">
                     {connections.length}
-                  </span>
+                  </p>
+                  <p className="text-xs text-slate-500 font-bold uppercase mt-1">
+                    Connections
+                  </p>
                 </div>
-                <div className="flex justify-between items-center py-1">
-                  <span className="text-slate-400">Pending Requests</span>
-                  <span className="text-yellow-400 text-base">
+                <div className="bg-slate-950/50 p-4 rounded-2xl border border-slate-800">
+                  <p className="text-2xl font-black text-purple-400">
                     {requests.length}
-                  </span>
+                  </p>
+                  <p className="text-xs text-slate-500 font-bold uppercase mt-1">
+                    Pending
+                  </p>
                 </div>
               </div>
             </div>
 
-            {/* SOCIAL LINKS */}
+            {/* Social Links Card */}
             {hasSocial && (
-              <div className="bg-[#161E2D] border border-slate-800 rounded-2xl font-medium p-6 shadow-sm">
-                <h3 className="font-bold mb-5 text-white text-lg">
-                  Social Links
+              <div className="bg-slate-900/40 border border-slate-800 rounded-3xl p-6">
+                <h3 className="text-sm font-bold text-slate-500 uppercase tracking-[0.2em] mb-6">
+                  Digital Footprint
                 </h3>
-                <div className="space-y-4">
+                <div className="space-y-3">
                   {social.github && (
-                    <a
-                      target="_blank"
-                      className="flex items-center gap-3 text-slate-400 hover:text-white transition group"
+                    <SocialItem
+                      icon={<FaGithub />}
+                      label="GitHub"
+                      value={`/${social.github}`}
                       href={`https://github.com/${social.github}`}
-                    >
-                      <div className="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center group-hover:bg-slate-700 transition">
-                        <FaGithub className="text-white" />
-                      </div>
-                      <span className="truncate max-w-[180px]">
-                        /{social.github}
-                      </span>
-                    </a>
+                      hoverClass="hover:bg-white/10 hover:text-white"
+                    />
                   )}
-
                   {social.linkedin && (
-                    <a
-                      target="_blank"
-                      className="flex items-center gap-3 text-slate-400 hover:text-white transition group"
-                      href={`https://www.linkedin.com/in/${social.linkedin}`}
-                    >
-                      <div className="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center group-hover:bg-blue-600/20 transition">
-                        <FaLinkedin className="text-blue-500" />
-                      </div>
-                      <span className="truncate max-w-[180px]">
-                        /{social.linkedin}
-                      </span>
-                    </a>
+                    <SocialItem
+                      icon={<FaLinkedin />}
+                      label="LinkedIn"
+                      value={`/in/${social.linkedin}`}
+                      href={`https://linkedin.com/in/${social.linkedin}`}
+                      hoverClass="hover:bg-blue-600/20 hover:text-blue-400"
+                    />
                   )}
-
                   {social.website && (
-                    <a
-                      target="_blank"
-                      className="flex items-center gap-3 text-slate-400 hover:text-white transition group "
+                    <SocialItem
+                      icon={<FaGlobe />}
+                      label="Portfolio"
+                      value={social.website}
                       href={`https://${social.website}`}
-                    >
-                      <div className="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center group-hover:bg-purple-500/20 transition">
-                        <FaGlobe className="text-purple-500" />
-                      </div>
-                      <span className="truncate max-w-[180px]">
-                        /{social.website}
-                      </span>
-                    </a>
+                      hoverClass="hover:bg-emerald-500/20 hover:text-emerald-400"
+                    />
                   )}
                 </div>
               </div>
@@ -220,6 +219,27 @@ function Profile() {
         </div>
       </div>
     </div>
+  );
+}
+
+// Sub-component for Social Links to keep code clean
+function SocialItem({ icon, label, value, href, hoverClass }) {
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noreferrer"
+      className={`flex items-center justify-between p-3 rounded-xl bg-slate-950/30 border border-slate-800/50 transition-all group ${hoverClass}`}
+    >
+      <div className="flex items-center gap-3">
+        <span className="text-lg">{icon}</span>
+        <span className="text-sm font-medium">{label}</span>
+      </div>
+      <FaExternalLinkAlt
+        size={12}
+        className="opacity-0 group-hover:opacity-100 transition-opacity"
+      />
+    </a>
   );
 }
 
