@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useState, useCallback } from "react";
+import { useState } from "react";
 import {
   Eye,
   EyeOff,
@@ -19,12 +19,14 @@ import { toast } from "react-toastify";
 import { addUser } from "../features/userSlice";
 import { BASE_URL } from "../utils/constants";
 import Loading from "../pages/Loading";
+import InputField from "./InputField";
 
 function Signup() {
   const { user, checked } = useSelector((state) => state.user);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  // Sign-up form data
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -34,15 +36,20 @@ function Signup() {
     location: { city: "", country: "" },
   });
 
+  // states for password show/hide, submit button loader, error message,
   const [showPassword, setShowPassword] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
 
+  // auth check
   if (!checked) return <Loading />;
   if (user) return <Navigate to="/feed" replace />;
 
+  // Handle inputes changes
   const handleChange = (e) => {
     const { name, value } = e.target;
+
+    // City and country are in nested object
     if (name === "city" || name === "country") {
       setForm((prev) => ({
         ...prev,
@@ -51,9 +58,11 @@ function Signup() {
     } else {
       setForm((prev) => ({ ...prev, [name]: value }));
     }
-    if (error) setError(""); // Clear error when user types
+    // Clear error when user start typing
+    if (error) setError("");
   };
 
+  // SignUp submit handler
   const handleSignup = async (e) => {
     e.preventDefault();
     setError("");
@@ -61,13 +70,19 @@ function Signup() {
     // Prepare payload
     const payload = {
       ...form,
+
+      // remove extra spaces
       name: form.name.trim(),
       email: form.email.trim(),
       headline: form.headline.trim(),
+
+      // convert string skills to array
       skills: form.skills
         .split(/[\s,]+/)
         .map((s) => s.trim())
         .filter(Boolean),
+
+      // trim extra spaces
       location: {
         city: form.location.city.trim(),
         country: form.location.country.trim(),
@@ -84,14 +99,18 @@ function Signup() {
     ) {
       return setError("All fields are required");
     }
+
+    // password length validation
     if (payload.password.length < 6)
       return setError("Password must be at least 6 characters");
 
+    // Signup API call
     setSubmitting(true);
     try {
       const res = await axios.post(`${BASE_URL}/auth/signup`, payload, {
         withCredentials: true,
       });
+
       toast.success("Welcome to the community!");
       dispatch(addUser(res?.data?.user));
       navigate("/feed", { replace: true });
@@ -107,7 +126,7 @@ function Signup() {
   return (
     <div className="min-h-screen flex items-center justify-center py-12 px-4 bg-[#0B101B] font-sans">
       <div className="w-full max-w-3xl animate-in fade-in zoom-in duration-500">
-        <div className="bg-slate-900/50 backdrop-blur-xl rounded-[1.5rem] p-8 md:p-12 border border-slate-800 shadow-2xl">
+        <div className="bg-slate-900/50 backdrop-blur-xl rounded-[1rem] p-8 md:p-12 border border-slate-800 shadow-2xl">
           <div className="text-center mb-10">
             <h1 className="text-3xl font-black text-white tracking-tight mb-2">
               Create Account
@@ -119,7 +138,7 @@ function Signup() {
 
           <form onSubmit={handleSignup} className="space-y-6">
             {error && (
-              <div className="p-4 text-sm text-red-400 bg-red-500/10 border border-red-500/20 rounded-2xl text-center animate-shake">
+              <div className="p-4 text-sm text-red-400 bg-red-500/10 border border-red-500/20 rounded-xl text-center animate-shake">
                 {error}
               </div>
             )}
@@ -195,7 +214,7 @@ function Signup() {
                     value={form.password}
                     onChange={handleChange}
                     placeholder="••••••••"
-                    className="w-full px-5 py-3.5 pl-11 bg-slate-950 border border-slate-800 rounded-2xl focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 outline-none transition-all text-white placeholder-slate-600"
+                    className="w-full px-5 py-3.5 pl-11 bg-slate-950 border border-slate-800 rounded-xl focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 outline-none transition-all text-white placeholder-slate-600"
                   />
                   <Lock
                     className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-purple-500 transition-colors"
@@ -204,7 +223,7 @@ function Signup() {
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white transition-colors"
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white transition-colors cursor-pointer"
                   >
                     {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                   </button>
@@ -215,7 +234,7 @@ function Signup() {
             <button
               disabled={submitting}
               type="submit"
-              className="w-full py-4 mt-4 cursor-pointer bg-gradient-to-r from-purple-600 to-pink-600 text-white font-black rounded-2xl shadow-lg shadow-purple-500/20 hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50 disabled:hover:scale-100 flex items-center justify-center gap-2"
+              className="w-full py-4 mt-4 cursor-pointer bg-gradient-to-r from-purple-600 to-pink-600 text-white font-black rounded-xl shadow-lg shadow-purple-500/20 hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50 disabled:hover:scale-100 flex items-center justify-center gap-2"
             >
               {submitting ? (
                 <Loader2 className="animate-spin" size={20} />
@@ -239,23 +258,5 @@ function Signup() {
     </div>
   );
 }
-
-// Helper Sub-component to keep code clean
-const InputField = ({ label, icon, ...props }) => (
-  <div className="space-y-2">
-    <label className="text-xs font-bold uppercase tracking-widest text-slate-500 ml-1">
-      {label}
-    </label>
-    <div className="relative group">
-      <input
-        {...props}
-        className="w-full px-5 py-3.5 pl-11 bg-slate-950 border border-slate-800 rounded-2xl focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 outline-none transition-all text-white placeholder-slate-600"
-      />
-      <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-purple-500 transition-colors">
-        {icon}
-      </div>
-    </div>
-  </div>
-);
 
 export default Signup;

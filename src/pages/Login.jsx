@@ -1,6 +1,6 @@
 import axios from "axios";
 import { Eye, EyeOff, Loader2, Lock, Mail, Rocket } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { FaGithub, FaGoogle } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, Navigate, useNavigate } from "react-router-dom";
@@ -9,6 +9,7 @@ import { toast } from "react-toastify";
 import { addUser } from "../features/userSlice";
 import Loading from "../pages/Loading";
 import { BASE_URL } from "../utils/constants";
+import InputField from "./InputField";
 
 function Login() {
   const { user, checked } = useSelector((store) => store.user);
@@ -65,7 +66,7 @@ function Login() {
 
       toast.success("Welcome back!");
       dispatch(addUser(res?.data?.user));
-      navigate("/feed", replace);
+      navigate("/feed", { replace: true });
     } catch (err) {
       setStatusMessage(
         err?.response?.data?.message ||
@@ -81,7 +82,7 @@ function Login() {
       <div className="w-full max-w-md animate-in fade-in zoom-in duration-500">
         {/* Logo/Brand Section */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-tr from-purple-600 to-pink-600 mb-4 shadow-xl shadow-purple-500/20">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-xl bg-gradient-to-tr from-purple-600 to-pink-600 mb-4 shadow-xl shadow-purple-500/20">
             <Rocket className="text-white w-8 h-8" />
           </div>
           <h1 className="text-3xl font-black text-white tracking-tight">
@@ -92,59 +93,42 @@ function Login() {
           </p>
         </div>
 
-        <div className="bg-slate-900/50 backdrop-blur-xl rounded-[1.5rem] p-8 border border-slate-800 shadow-2xl shadow-black/50">
+        <div className="bg-slate-900/50 backdrop-blur-xl rounded-[1rem] p-8 border border-slate-800 shadow-2xl shadow-black/50">
           <form onSubmit={handleLogin} className="space-y-5">
             {statusMessage && (
-              <div
-                className={`p-4 rounded-xl border text-sm text-center animate-shake ${
-                  statusMessage.type === "error"
-                    ? "bg-red-500/10 border-red-500/20 text-red-400"
-                    : "bg-emerald-500/10 border-emerald-500/20 text-emerald-400"
-                }`}
-              >
+              <div className="p-4 rounded-xl border text-sm text-center animate-shake bg-red-500/10 border-red-500/20 text-red-400">
                 {statusMessage}
               </div>
             )}
 
-            <div className="space-y-2">
-              <label className="text-xs font-bold uppercase tracking-widest text-slate-500 ml-1">
-                Email Address
-              </label>
-              <div className="relative group mt-1">
-                <input
-                  name="email"
-                  type="email"
-                  value={formData.email}
-                  onChange={handleInputChange}
-                  className="w-full px-5 py-3.5 pl-12 bg-slate-950 border border-slate-800 rounded-2xl focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 outline-none transition-all text-white placeholder-slate-600"
-                  placeholder="name@company.com"
-                  required
-                />
-                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-purple-500 transition-colors w-5 h-5" />
-              </div>
-            </div>
+            <InputField
+              label="Email Address"
+              icon={<Mail className="w-5 h-5" />}
+              name="email"
+              type="email"
+              value={formData.email}
+              onChange={handleInputChange}
+              placeholder="name@company.com"
+              required
+            />
 
             <div className="space-y-2">
-              <div className="flex justify-between items-center ml-1">
-                <label className="text-xs font-bold uppercase tracking-widest text-slate-500">
-                  Password
-                </label>
-              </div>
-              <div className="relative group mt-1">
-                <input
+              <div className="relative">
+                <InputField
+                  label="Password"
+                  icon={<Lock className="w-5 h-5" />}
                   name="password"
                   type={showPassword ? "text" : "password"}
                   value={formData.password}
                   onChange={handleInputChange}
-                  className="w-full px-5 py-3.5 pl-12 pr-12 bg-slate-950 border border-slate-800 rounded-2xl focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500 outline-none transition-all text-white placeholder-slate-600"
                   placeholder="••••••••"
                   required
                 />
-                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-purple-500 transition-colors w-5 h-5" />
+
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white transition-colors cursor-pointer"
+                  className="absolute right-4 top-[65%] -translate-y-1/2 text-slate-500 hover:text-white transition-colors cursor-pointer"
                 >
                   {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
@@ -154,7 +138,7 @@ function Login() {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full py-4 cursor-pointer rounded-2xl font-black text-white bg-gradient-to-r from-purple-600 to-pink-600 hover:scale-[1.02] active:scale-[0.98] transition-all shadow-lg shadow-purple-500/25 disabled:opacity-50 disabled:hover:scale-100 flex items-center justify-center gap-2"
+              className="w-full py-4 mt-8 cursor-pointer rounded-xl font-black text-white bg-gradient-to-r from-purple-600 to-pink-600 hover:scale-[1.02] active:scale-[0.98] transition-all shadow-lg shadow-purple-500/25 disabled:opacity-50 disabled:hover:scale-100 flex items-center justify-center gap-2"
             >
               {isSubmitting ? (
                 <Loader2 className="w-5 h-5 animate-spin" />
@@ -165,7 +149,7 @@ function Login() {
           </form>
 
           {/* Social Divider */}
-          <div className="mt-10 flex items-center gap-4">
+          <div className="mt-8 flex items-center gap-4">
             <div className="h-px flex-1 bg-slate-800"></div>
             <span className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em]">
               Social Connect
@@ -181,6 +165,7 @@ function Login() {
               <FaGithub className="w-5 h-5 mr-2" />
               <span className="text-xs font-bold">GitHub</span>
             </button>
+
             <button
               disabled
               className="py-3 bg-slate-950 border border-slate-800 rounded-xl flex items-center justify-center text-slate-600 cursor-not-allowed group transition-all"
