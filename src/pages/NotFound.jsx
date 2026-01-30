@@ -1,5 +1,3 @@
-import React from "react";
-
 const NotFound = () => {
   return (
     <div className="min-h-screen bg-[#020617] text-white font-sans flex flex-col">
@@ -15,8 +13,8 @@ const NotFound = () => {
             Page Not Found
           </h2>
           <p className="text-slate-400 max-w-md mx-auto mb-10 text-lg">
-            We couldn't find a page at this endpoint. They might have
-            deleted page or moved to a different url.
+            We couldn't find a page at this endpoint. They might have deleted
+            page or moved to a different url.
           </p>
 
           {/* Simple Clean Buttons - Matching the purple/dark theme */}
