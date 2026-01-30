@@ -106,7 +106,7 @@ function Signup() {
 
   return (
     <div className="min-h-screen flex items-center justify-center py-12 px-4 bg-[#0B101B] font-sans">
-      <div className="w-full max-w-2xl animate-in fade-in zoom-in duration-500">
+      <div className="w-full max-w-3xl animate-in fade-in zoom-in duration-500">
         <div className="bg-slate-900/50 backdrop-blur-xl rounded-[1.5rem] p-8 md:p-12 border border-slate-800 shadow-2xl">
           <div className="text-center mb-10">
             <h1 className="text-3xl font-black text-white tracking-tight mb-2">

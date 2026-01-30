@@ -42,7 +42,7 @@ function Profile() {
     <div className="w-full min-h-screen bg-[#0B101B] py-12 px-4 font-sans text-slate-200">
       <div className="max-w-5xl mx-auto space-y-8">
         {/* ================= HERO SECTION ================= */}
-        <div className="relative group overflow-hidden bg-slate-900/40 border border-slate-800 rounded-[2.5rem] p-8 md:p-12 transition-all hover:border-purple-500/30">
+        <div className="relative group overflow-hidden bg-slate-900/40 border border-slate-800 rounded-[1.5rem] p-8 md:p-12 transition-all hover:border-purple-500/30">
           {/* Animated Background Glow */}
           <div className="absolute -top-24 -right-24 w-96 h-96 bg-purple-600/10 rounded-full blur-[100px] pointer-events-none group-hover:bg-purple-600/20 transition-all duration-700"></div>
 
@@ -116,9 +116,9 @@ function Profile() {
           {/* LEFT: About & Skills (8 Cols) */}
           <div className="lg:col-span-8 space-y-8">
             {/* About Card */}
-            <div className="bg-slate-900/40 border border-slate-800 rounded-3xl p-8 transition-all hover:bg-slate-900/60">
+            <div className="bg-slate-900/40 border border-slate-800 rounded-2xl p-8 transition-all hover:bg-slate-900/60">
               <div className="flex items-center gap-3 mb-6">
-                <div className="p-2 bg-purple-500/10 rounded-lg">
+                <div className="p-2 bg-purple-500/10 rounded-2g">
                   <FaUser className="text-purple-500" />
                 </div>
                 <h3 className="text-xl font-bold text-white uppercase tracking-wider">
@@ -132,7 +132,7 @@ function Profile() {
             </div>
 
             {/* Skills Card */}
-            <div className="bg-slate-900/40 border border-slate-800 rounded-3xl p-8 transition-all hover:bg-slate-900/60">
+            <div className="bg-slate-900/40 border border-slate-800 rounded-2xl p-8 transition-all hover:bg-slate-900/60">
               <div className="flex items-center gap-3 mb-8">
                 <div className="p-2 bg-pink-500/10 rounded-lg">
                   <BsCodeSlash className="text-pink-500 text-xl" />
@@ -154,7 +154,7 @@ function Profile() {
           {/* RIGHT: Stats & Links (4 Cols) */}
           <div className="lg:col-span-4 space-y-8">
             {/* Stats Card */}
-            <div className="bg-gradient-to-br from-slate-800/50 to-slate-900/50 border border-slate-800 rounded-3xl p-6 shadow-2xl">
+            <div className="bg-gradient-to-br from-slate-800/50 to-slate-900/50 border border-slate-800 rounded-2xl p-6 shadow-2xl">
               <h3 className="text-sm font-bold text-slate-500 uppercase tracking-[0.2em] mb-6">
                 Network Insights
               </h3>
@@ -180,7 +180,7 @@ function Profile() {
 
             {/* Social Links Card */}
             {hasSocial && (
-              <div className="bg-slate-900/40 border border-slate-800 rounded-3xl p-6">
+              <div className="bg-slate-900/40 border border-slate-800 rounded-2xl p-6">
                 <h3 className="text-sm font-bold text-slate-500 uppercase tracking-[0.2em] mb-6">
                   Digital Footprint
                 </h3>

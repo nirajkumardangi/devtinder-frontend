@@ -53,7 +53,7 @@ function ConnectionProfileInfo() {
         </button>
 
         {/* PROFILE HERO CARD */}
-        <div className="relative group bg-slate-900/40 border border-slate-800 rounded-[2.5rem] p-8 md:p-12 overflow-hidden">
+        <div className="relative group bg-slate-900/40 border border-slate-800 rounded-[1.5rem] p-8 md:p-12 overflow-hidden">
           {/* Ambient Background Glow */}
           <div className="absolute -top-24 -right-24 w-96 h-96 bg-purple-600/10 rounded-full blur-[100px] pointer-events-none group-hover:bg-purple-600/20 transition-all duration-700"></div>
 
@@ -124,7 +124,7 @@ function ConnectionProfileInfo() {
           {/* LEFT: Main Bio and Skills */}
           <div className="lg:col-span-2 space-y-8">
             {/* ABOUT */}
-            <div className="bg-slate-900/40 border border-slate-800 rounded-3xl p-8 hover:bg-slate-900/60 transition-colors">
+            <div className="bg-slate-900/40 border border-slate-800 rounded-2xl p-8 hover:bg-slate-900/60 transition-colors">
               <h3 className="text-xs font-black text-slate-500 uppercase tracking-[0.2em] mb-6 flex items-center gap-2">
                 <div className="w-1.5 h-1.5 rounded-full bg-purple-500" />
                 Professional Summary
@@ -135,7 +135,7 @@ function ConnectionProfileInfo() {
             </div>
 
             {/* SKILLS */}
-            <div className="bg-slate-900/40 border border-slate-800 rounded-3xl p-8 hover:bg-slate-900/60 transition-colors">
+            <div className="bg-slate-900/40 border border-slate-800 rounded-2xl p-8 hover:bg-slate-900/60 transition-colors">
               <h3 className="text-xs font-black text-slate-500 uppercase tracking-[0.2em] mb-6 flex items-center gap-2">
                 <div className="w-1.5 h-1.5 rounded-full bg-pink-500" />
                 Tech Stack & Expertise
@@ -148,7 +148,7 @@ function ConnectionProfileInfo() {
 
           {/* RIGHT: Social Sidebar */}
           <div className="space-y-8">
-            <div className="bg-gradient-to-br from-slate-800/50 to-slate-900/50 border border-slate-800 rounded-3xl p-8">
+            <div className="bg-gradient-to-br from-slate-800/50 to-slate-900/50 border border-slate-800 rounded-2xl p-8">
               <h3 className="text-xs font-black text-slate-500 uppercase tracking-[0.2em] mb-8">
                 Digital Footprint
               </h3>

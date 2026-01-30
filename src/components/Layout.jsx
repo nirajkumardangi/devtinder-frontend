@@ -10,11 +10,9 @@ import { BASE_URL } from "../utils/constants";
 function Layout() {
   const dispatch = useDispatch();
   const location = useLocation();
-  const { checked } = useSelector((store) => store.user);
   const hasFetched = useRef(false);
 
   useEffect(() => {
-    // Only fetch once per app session
     if (hasFetched.current) return;
 
     const fetchUser = async () => {
@@ -25,7 +23,6 @@ function Layout() {
         dispatch(addUser(res.data.user));
       } catch (err) {
         dispatch(setChecked());
-        // No auto-navigate here; let the Protected component handle redirects
       } finally {
         hasFetched.current = true;
       }
@@ -40,18 +37,20 @@ function Layout() {
   }, [location.pathname]);
 
   return (
-    <div className="flex flex-col min-h-screen bg-[#0B101B]">
-      {/* Navbar with fixed height management */}
-      <header className="fixed top-0 left-0 right-0 z-[100]">
-        <Navbar />
-      </header>
+    <div className="flex flex-col min-h-screen bg-[#030712] selection:bg-purple-500/30 selection:text-white">
+      <Navbar />
 
-      {/* Main Content Area */}
-      <main className="flex-grow pt-16 animate-in fade-in duration-500">
+      {/* Added a subtle background glow that follows the layout
+       */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] bg-purple-900/10 blur-[120px] rounded-full" />
+      </div>
+
+      {/* Main Content Area with padding-top to account for fixed header */}
+      <main className="flex-grow pt-16 relative z-10">
         <Outlet />
       </main>
 
-      {/* Footer */}
       <Footer />
     </div>
   );

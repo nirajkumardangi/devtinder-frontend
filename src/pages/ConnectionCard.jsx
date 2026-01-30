@@ -28,10 +28,8 @@ function ConnectionCard({ data, onRemoveConnection }) {
     <div className="group relative bg-slate-900/40 border border-slate-800 rounded-[1rem] p-6 hover:bg-slate-900/60 hover:border-purple-500/30 transition-all duration-300 flex flex-col h-full">
       {/* Top Section: Avatar & Action Menu */}
       <div className="flex items-start justify-between mb-6 gap-2">
-        {" "}
         {/* Added gap and items-start */}
         <div className="flex items-center gap-4 min-w-0 flex-1">
-          {" "}
           {/* Added min-w-0 and flex-1 */}
           <div className="relative shrink-0">
             <div className="w-16 h-16 rounded-2xl overflow-hidden ring-2 ring-slate-800 group-hover:ring-purple-500/50 transition-all duration-300">
@@ -44,7 +42,6 @@ function ConnectionCard({ data, onRemoveConnection }) {
           </div>
           {/* Text Container */}
           <div className="flex-1 min-w-0">
-            {" "}
             {/* Essential: min-w-0 allows truncation */}
             <h3 className="font-bold text-white text-lg truncate leading-tight group-hover:text-purple-400 transition-colors">
               {data.name}
@@ -56,8 +53,6 @@ function ConnectionCard({ data, onRemoveConnection }) {
         </div>
         {/* Menu Section */}
         <div className="relative shrink-0" ref={menuRef}>
-          {" "}
-          {/* Added shrink-0 to prevent menu from being squished */}
           <button
             onClick={() => setShowMenu(!showMenu)}
             className="p-2 hover:bg-slate-800 rounded-xl transition-colors text-slate-500 hover:text-white cursor-pointer"
@@ -65,7 +60,7 @@ function ConnectionCard({ data, onRemoveConnection }) {
             <MoreVertical size={18} />
           </button>
           {showMenu && (
-            <div className="absolute right-0 top-full mt-2 z-50 w-48 bg-slate-800 border border-slate-700 rounded-2xl shadow-2xl backdrop-blur-xl overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
+            <div className="absolute right-0 top-full mt-2 z-50 w-48 bg-slate-800 border border-slate-700 rounded-xl shadow-2xl backdrop-blur-xl overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
               <button
                 onClick={() => navigate(`/connections/${data._id}`)}
                 className="flex items-center gap-3 w-full px-4 py-3 text-sm text-slate-300 hover:bg-slate-700 hover:text-white transition-colors cursor-pointer"

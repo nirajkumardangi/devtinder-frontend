@@ -6,9 +6,7 @@ function Footer() {
 
   return (
     <footer
-      className={`bg-[#0B101B] border-t border-slate-800/50 py-8 px-4 transition-all ${
-        user ? "mb-14 md:mb-0" : "mb-0"
-      }`}
+      className={`bg-[#0B101B] border-t border-slate-800/50 py-6 px-4 transition-all text-sm ${user ? "mb-12 md:mb-0" : "mb-0"}`}
     >
       <div className="max-w-6xl mx-auto flex flex-col items-center justify-center gap-6">
         {/* Brand/Credit Section */}

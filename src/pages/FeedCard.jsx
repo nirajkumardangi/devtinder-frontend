@@ -92,7 +92,7 @@ function FeedCard({ user, onSwipeLeft, onSwipeRight }) {
         </div>
       </div>
 
-      <div className="w-full h-full bg-[#161E2D] rounded-[2rem] overflow-hidden border border-slate-800 shadow-2xl flex flex-col">
+      <div className="w-full h-full bg-[#161E2D] rounded-[1.5rem] overflow-hidden border border-slate-800 shadow-2xl flex flex-col">
         <div className="relative h-[55%] w-full">
           <img
             src={avatar}
