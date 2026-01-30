@@ -8,16 +8,41 @@ import {
   FaCalendarAlt,
   FaUser,
 } from "react-icons/fa";
-import { useSelector } from "react-redux";
-import SkillTags from "../components/SkillTags";
 import { FaMessage } from "react-icons/fa6";
 import { Mail, ShieldCheck, ExternalLink } from "lucide-react";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import SkillTags from "../components/SkillTags";
+import { addConnections } from "../features/connectionSlice";
+import axios from "axios";
+import Loading from "./Loading";
+import { BASE_URL } from "../utils/constants";
 
 function ConnectionProfileInfo() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const { id } = useParams();
   const connections = useSelector((s) => s.connection);
+  const [loading, setLoading] = useState(false);
+
+  // Connection data from Redux
   const user = connections.find((u) => u._id === id);
+
+  useEffect(() => {
+    // after page refresh user not found, then fetch connections
+    if (!user) {
+      setLoading(true);
+      axios
+        .get(`${BASE_URL}/users/connections`, { withCredentials: true })
+        .then((res) => {
+          dispatch(addConnections(res.data?.data || []));
+        })
+        .catch(() => {})
+        .finally(() => setLoading(false));
+    }
+  }, [id, user, dispatch]);
+
+  if (loading) return <Loading />; 
 
   if (!user) {
     return (
@@ -39,149 +64,94 @@ function ConnectionProfileInfo() {
   });
 
   return (
-    <div className="w-full min-h-screen bg-[#0B101B] py-10 px-4 font-sans text-slate-200 selection:bg-purple-500/30">
+    <div className="w-full min-h-screen bg-[#0B101B] py-10 px-4 text-slate-200">
       <div className="max-w-5xl mx-auto space-y-8">
-        {/* TOP NAVIGATION */}
         <button
           onClick={() => navigate(-1)}
-          className="group inline-flex items-center gap-2 font-bold text-slate-500 hover:text-white transition-all"
+          className="inline-flex items-center gap-2 text-slate-500 hover:text-white font-bold cursor-pointer"
         >
-          <div className="p-2 rounded-lg bg-slate-900 group-hover:bg-slate-800 border border-slate-800 group-hover:border-slate-700 transition-all cursor-pointer">
-            <FaArrowLeft className="text-xs" />
-          </div>
-          <span className="cursor-pointer">Back to Connections</span>
+          <FaArrowLeft /> Back to Connections
         </button>
 
-        {/* PROFILE HERO CARD */}
-        <div className="relative group bg-slate-900/40 border border-slate-800 rounded-[1.5rem] p-8 md:p-12 overflow-hidden">
-          {/* Ambient Background Glow */}
-          <div className="absolute -top-24 -right-24 w-96 h-96 bg-purple-600/10 rounded-full blur-[100px] pointer-events-none group-hover:bg-purple-600/20 transition-all duration-700"></div>
-
-          <div className="relative flex flex-col md:flex-row items-center gap-10">
-            {/* Avatar Section */}
-            <div className="relative">
-              <div className="w-40 h-40 rounded-full ring-4 ring-purple-500/20 p-1.5 bg-gradient-to-tr from-purple-500 to-pink-500 shadow-2xl">
-                <div className="w-full h-full rounded-full overflow-hidden bg-slate-900 border-4 border-[#0B101B]">
-                  <img
-                    src={user.avatar}
-                    alt={user.name}
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                  />
-                </div>
+        <div className="bg-slate-900/40 border border-slate-800 rounded-3xl p-8">
+          <div className="flex flex-col md:flex-row items-center gap-10">
+            <img
+              src={user.avatar}
+              alt={user.name}
+              className="w-40 h-40 rounded-full object-cover ring-4 ring-purple-500/20"
+            />
+            <div className="flex-1 text-center md:text-left space-y-3">
+              <div className="flex items-center justify-center md:justify-start gap-2">
+                <h1 className="text-4xl font-black uppercase italic">
+                  {user.name}
+                </h1>
+                <ShieldCheck className="text-blue-400" />
               </div>
-              <div
-                className="absolute bottom-3 right-3 w-6 h-6 rounded-full bg-emerald-500 border-4 border-[#0B101B] shadow-lg"
-                title="Matched & Connected"
-              />
-            </div>
-
-            {/* Info Section */}
-            <div className="flex-1 text-center md:text-left space-y-4">
-              <div>
-                <div className="flex items-center justify-center md:justify-start gap-3 mb-1">
-                  <h1 className="text-4xl font-black text-white tracking-tight uppercase italic">
-                    {user.name}
-                  </h1>
-                  <ShieldCheck size={24} className="text-blue-400" />
-                </div>
-                <p className="text-xl text-purple-400 font-semibold tracking-wide">
-                  {user.headline || "Full Stack Developer"}
-                </p>
-              </div>
-
-              <div className="flex flex-wrap justify-center md:justify-start gap-x-6 gap-y-2 text-slate-400 text-sm font-bold uppercase tracking-widest">
+              <p className="text-purple-400 font-semibold text-xl">
+                {user.headline || "Full Stack Developer"}
+              </p>
+              <div className="flex flex-wrap gap-4 text-sm text-slate-400 font-bold">
                 {user.location?.city && (
-                  <span className="flex items-center gap-2 hover:text-white transition-all">
-                    <FaMapMarkerAlt className="text-purple-500" />
-                    {user.location.city}, {user.location.country}
+                  <span className="flex items-center gap-1">
+                    <FaMapMarkerAlt /> {user.location.city},{" "}
+                    {user.location.country}
                   </span>
                 )}
                 {user.age && (
-                  <span className="flex items-center gap-2 hover:text-white transition-all">
-                    <FaUser className="text-purple-500" /> Age {user.age}
+                  <span className="flex items-center gap-1">
+                    <FaUser /> Age {user.age}
                   </span>
                 )}
-                <span className="flex items-center gap-2 hover:text-white transition-all">
-                  <FaCalendarAlt className="text-purple-500" /> Joined{" "}
-                  {memberSince}
+                <span className="flex items-center gap-1">
+                  <FaCalendarAlt /> Joined {memberSince}
                 </span>
               </div>
             </div>
-
-            {/* CTA Action */}
             <button
               onClick={() => navigate(`/messages/${id}`)}
-              className="md:self-center px-8 py-4 bg-white text-slate-950 hover:bg-purple-100 rounded-2xl font-black transition-all flex items-center gap-3 shadow-xl active:scale-95 cursor-pointer"
+              className="px-8 py-4 bg-white text-black rounded-2xl font-black flex items-center gap-2 hover:bg-purple-100 transition-colors cursor-pointer"
             >
-              <FaMessage size={18} />
-              SEND MESSAGE
+              <FaMessage /> SEND MESSAGE
             </button>
           </div>
         </div>
 
-        {/* CONTENT GRID */}
         <div className="grid lg:grid-cols-3 gap-8">
-          {/* LEFT: Main Bio and Skills */}
           <div className="lg:col-span-2 space-y-8">
-            {/* ABOUT */}
-            <div className="bg-slate-900/40 border border-slate-800 rounded-2xl p-8 hover:bg-slate-900/60 transition-colors">
-              <h3 className="text-xs font-black text-slate-500 uppercase tracking-[0.2em] mb-6 flex items-center gap-2">
-                <div className="w-1.5 h-1.5 rounded-full bg-purple-500" />
+            <div className="bg-slate-900/40 border border-slate-800 rounded-2xl p-8">
+              <h3 className="text-xs uppercase tracking-widest text-slate-500 mb-4">
                 Professional Summary
               </h3>
-              <p className="text-slate-300 text-lg leading-relaxed font-medium italic">
-                "{user.about || "No detailed bio provided by the developer."}"
+              <p className="italic text-slate-300">
+                "{user.about || "No bio provided."}"
               </p>
             </div>
-
-            {/* SKILLS */}
-            <div className="bg-slate-900/40 border border-slate-800 rounded-2xl p-8 hover:bg-slate-900/60 transition-colors">
-              <h3 className="text-xs font-black text-slate-500 uppercase tracking-[0.2em] mb-6 flex items-center gap-2">
-                <div className="w-1.5 h-1.5 rounded-full bg-pink-500" />
-                Tech Stack & Expertise
+            <div className="bg-slate-900/40 border border-slate-800 rounded-2xl p-8">
+              <h3 className="text-xs uppercase tracking-widest text-slate-500 mb-4">
+                Tech Stack
               </h3>
-              <div className="flex flex-wrap gap-4">
-                <SkillTags skills={user.skills} size="large" />
-              </div>
+              <SkillTags skills={user.skills} size="large" />
             </div>
           </div>
-
-          {/* RIGHT: Social Sidebar */}
-          <div className="space-y-8">
-            <div className="bg-gradient-to-br from-slate-800/50 to-slate-900/50 border border-slate-800 rounded-2xl p-8">
-              <h3 className="text-xs font-black text-slate-500 uppercase tracking-[0.2em] mb-8">
-                Digital Footprint
-              </h3>
-              <div className="space-y-4">
-                <SocialLink
-                  icon={<FaGithub />}
-                  label="GitHub"
-                  value={user.social?.github}
-                  url={`https://github.com/${user.social?.github}`}
-                  color="hover:bg-white hover:text-black"
-                />
-                <SocialLink
-                  icon={<FaLinkedin />}
-                  label="LinkedIn"
-                  value={user.social?.linkedin}
-                  url={`https://linkedin.com/in/${user.social?.linkedin}`}
-                  color="hover:bg-blue-600 hover:text-white"
-                />
-                <SocialLink
-                  icon={<FaGlobe />}
-                  label="Portfolio"
-                  value={user.social?.website}
-                  url={`https://${user.social?.website}`}
-                  color="hover:bg-emerald-500 hover:text-white"
-                />
-              </div>
-
-              <div className="mt-10 pt-8 border-t border-slate-800">
-                <button className="w-full flex items-center justify-center gap-2 text-sm font-bold text-slate-500 hover:text-red-400 transition-colors">
-                  <Mail size={16} /> Report Connection
-                </button>
-              </div>
-            </div>
+          <div className="space-y-6">
+            <SocialLink
+              icon={<FaGithub />}
+              label="GitHub"
+              value={user.social?.github}
+              url={`https://github.com/${user.social?.github}`}
+            />
+            <SocialLink
+              icon={<FaLinkedin />}
+              label="LinkedIn"
+              value={user.social?.linkedin}
+              url={`https://linkedin.com/in/${user.social?.linkedin}`}
+            />
+            <SocialLink
+              icon={<FaGlobe />}
+              label="Portfolio"
+              value={user.social?.website}
+              url={`https://${user.social?.website}`}
+            />
           </div>
         </div>
       </div>
@@ -189,24 +159,20 @@ function ConnectionProfileInfo() {
   );
 }
 
-// Sub-component for Social Links
-function SocialLink({ icon, label, value, url, color }) {
+function SocialLink({ icon, label, value, url }) {
   if (!value) return null;
   return (
     <a
       href={url}
       target="_blank"
       rel="noopener noreferrer"
-      className={`flex items-center justify-between p-4 rounded-2xl bg-slate-950/40 border border-slate-800/50 transition-all group ${color}`}
+      className="flex items-center justify-between p-4 rounded-xl bg-slate-900/40 border border-slate-800 hover:bg-slate-800 transition"
     >
       <div className="flex items-center gap-3 font-bold">
-        <span className="text-xl">{icon}</span>
-        <span className="text-sm">{label}</span>
+        {icon}
+        {label}
       </div>
-      <ExternalLink
-        size={14}
-        className="opacity-0 group-hover:opacity-100 transition-opacity"
-      />
+      <ExternalLink size={14} />
     </a>
   );
 }
