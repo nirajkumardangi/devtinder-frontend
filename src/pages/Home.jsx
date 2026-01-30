@@ -26,7 +26,6 @@ import {
   FaInfinity,
 } from "react-icons/fa";
 import Hero from "./Hero";
-import Footer from "../components/Footer";
 
 const Home = () => {
   const [activeTab, setActiveTab] = useState("matching");
@@ -620,7 +619,7 @@ const Home = () => {
               <div>
                 <div className="flex items-center gap-3 mb-6">
                   <h3 className="text-4xl font-black text-white">
-                    Niraj Kr. dangi
+                    Niraj Kr. Dangi
                   </h3>
                   <FaCheckCircle className="text-2xl text-blue-400" />
                 </div>
