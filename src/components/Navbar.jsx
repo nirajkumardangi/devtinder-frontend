@@ -173,7 +173,7 @@ const Navbar = () => {
             <div className="mt-auto border-t border-slate-800 pt-6">
               <button
                 onClick={handleLogout}
-                className="flex w-full items-center justify-center gap-3 px-4 py-4 rounded-2xl bg-red-500/10 text-red-400 font-bold"
+                className="flex w-full items-center justify-center gap-3 px-4 py-4 rounded-2xl bg-red-500/10 text-red-400 font-bold cursor-pointer"
               >
                 <LogOut size={20} /> Sign Out
               </button>
