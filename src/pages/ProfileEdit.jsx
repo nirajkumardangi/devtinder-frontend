@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import axios from "axios";
 import {
   X,
@@ -98,8 +98,10 @@ const ProfileEdit = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+
     if (name.includes(".")) {
       const [parent, child] = name.split(".");
+
       setFormData((prev) => ({
         ...prev,
         [parent]: { ...prev[parent], [child]: value },
@@ -112,6 +114,7 @@ const ProfileEdit = () => {
   const handleAddSkill = () => {
     const skill = newSkill.trim().toLowerCase();
     if (!skill) return;
+    
     if (formData.skills.length >= 10)
       return toast.warning("Max 10 skills allowed");
     if (formData.skills.includes(skill))
@@ -367,7 +370,7 @@ const ProfileEdit = () => {
         </section>
 
         {/* Floating Action Bar */}
-        <div className="fixed bottom-16 md:bottom-6 left-1/2 -translate-x-1/2 w-full max-w-lg px-4 z-40">
+        <div className="fixed bottom-20 md:bottom-4 left-1/2 -translate-x-1/2 w-full max-w-lg px-4 z-40">
           <div className="bg-slate-800/90 backdrop-blur-xl border border-slate-600 p-2 rounded-2xl shadow-2xl flex gap-2">
             <button
               onClick={() => navigate("/profile")}
