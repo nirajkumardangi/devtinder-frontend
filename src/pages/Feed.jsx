@@ -33,10 +33,8 @@ function Feed() {
   }, [dispatch]);
 
   useEffect(() => {
-    if (!feedData || feedData.length === 0) {
-      fetchFeed();
-    }
-  }, [fetchFeed, feedData?.length]);
+    fetchFeed();
+  }, [fetchFeed]);
 
   const handleAction = async (id, status) => {
     try {
@@ -51,7 +49,6 @@ function Feed() {
       );
     } catch (error) {
       toast.error("Action failed. Please refresh.");
-      fetchFeed(); // Refresh to get data back on error
     }
   };
 

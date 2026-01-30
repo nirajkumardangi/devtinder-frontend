@@ -1,4 +1,4 @@
-import React, { useState, memo } from "react";
+import { useState, memo } from "react";
 import {
   ChevronDown,
   Code,
@@ -15,6 +15,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { removeUser } from "../features/userSlice";
+import { clearFeed } from "../features/feedSlice";
 
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -27,6 +28,7 @@ const Navbar = () => {
 
   const handleLogout = () => {
     dispatch(removeUser());
+    dispatch(clearFeed());
     setIsMobileMenuOpen(false);
     navigate("/");
     toast.info("See you soon, Dev!", { position: "bottom-right" });
