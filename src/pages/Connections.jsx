@@ -17,14 +17,16 @@ function Connections() {
   const fetchConnections = useCallback(
     async (showLoader = true) => {
       if (showLoader) setIsLoading(true);
+
       try {
-        const response = await axios.get(`${BASE_URL}/users/connections`, {
+        const res = await axios.get(`${BASE_URL}/users/connections`, {
           withCredentials: true,
         });
-        dispatch(addConnections(response.data.data || []));
+
+        dispatch(addConnections(res?.data?.data || []));
       } catch (error) {
         toast.error(
-          error.response?.data?.message || "Failed to fetch connections",
+          error.res?.data?.message || "Failed to fetch connections",
         );
       } finally {
         setIsLoading(false);
@@ -47,7 +49,7 @@ function Connections() {
       toast.success("Connection removed");
     } catch (error) {
       toast.error("Failed to sync removal with server");
-      fetchConnections(false); // Re-fetch to sync state if API fails
+      fetchConnections(false);
     }
   };
 
