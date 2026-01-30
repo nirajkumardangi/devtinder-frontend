@@ -15,6 +15,7 @@ import Connections from "../pages/Connections";
 import ProfileEdit from "../pages/ProfileEdit";
 import ConnectionProfileInfo from "../pages/ConnectionProfileInfo";
 import Requests from "../pages/Requests";
+import NotFound from "../pages/NotFound";
 
 function App() {
   const { user } = useSelector((store) => store.user);
@@ -43,9 +44,10 @@ function App() {
           {/* Auth Routes */}
           <Route path="login" element={<Login />} />
           <Route path="signup" element={<Signup />} />
+          <Route path="not-found" element={<NotFound />} />
 
           {/* Catch All */}
-          <Route path="*" element={<Navigate to="/" replace />} />
+          <Route path="*" element={<Navigate to="/not-found" replace />} />
         </Route>
       </Routes>
     </BrowserRouter>
