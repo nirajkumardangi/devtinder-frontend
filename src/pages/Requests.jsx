@@ -36,7 +36,7 @@ function Requests() {
 
   useEffect(() => {
     fetchReceived();
-  }, [fetchReceived]);
+  }, []);
 
   // Inside Requests.js
   const reviewRequest = async (status, id) => {
@@ -57,7 +57,6 @@ function Requests() {
       );
     } catch (err) {
       toast.error("Action failed. Syncing list...");
-      fetchReceived(true);
     }
   };
 
