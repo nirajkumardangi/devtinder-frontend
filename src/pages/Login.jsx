@@ -14,48 +14,45 @@ function Login() {
   const { user, checked } = useSelector((store) => store.user);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const emailRef = useRef(null);
 
   const [formData, setFormData] = useState({
     email: "niraj@gmail.com",
     password: "Niraj@123",
   });
+
+  // States for password show/hide, submit button loader, show error status messages
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [statusMessage, setStatusMessage] = useState({ type: "", text: "" });
+  const [statusMessage, setStatusMessage] = useState("");
 
-  // Auto-focus email on mount
-  useEffect(() => {
-    if (checked && !user) emailRef.current?.focus();
-  }, [checked, user]);
-
+  // Auth check
   if (!checked) return <Loading />;
   if (user) return <Navigate to="/feed" replace />;
 
+  // Handle input change
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-    if (statusMessage.text) setStatusMessage({ type: "", text: "" });
+    if (statusMessage) setStatusMessage("");
   };
 
+  // Form validation function
   const validateForm = () => {
+    // email validation regex
     if (!formData.email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
-      setStatusMessage({
-        type: "error",
-        text: "Please enter a valid email address",
-      });
+      setStatusMessage("Please enter a valid email address");
       return false;
     }
+
+    // password length check
     if (formData.password.length < 6) {
-      setStatusMessage({
-        type: "error",
-        text: "Password must be at least 6 characters",
-      });
+      setStatusMessage("Password must be at least 6 characters");
       return false;
     }
     return true;
   };
 
+  // Login submit handler
   const handleLogin = async (e) => {
     e.preventDefault();
     if (!validateForm()) return;
@@ -70,10 +67,10 @@ function Login() {
       dispatch(addUser(res?.data?.user));
       navigate("/feed", replace);
     } catch (err) {
-      const msg =
+      setStatusMessage(
         err?.response?.data?.message ||
-        "Invalid credentials. Please try again.";
-      setStatusMessage({ type: "error", text: msg });
+          "Invalid credentials. Please try again.",
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -97,7 +94,7 @@ function Login() {
 
         <div className="bg-slate-900/50 backdrop-blur-xl rounded-[1.5rem] p-8 border border-slate-800 shadow-2xl shadow-black/50">
           <form onSubmit={handleLogin} className="space-y-5">
-            {statusMessage.text && (
+            {statusMessage && (
               <div
                 className={`p-4 rounded-xl border text-sm text-center animate-shake ${
                   statusMessage.type === "error"
@@ -105,7 +102,7 @@ function Login() {
                     : "bg-emerald-500/10 border-emerald-500/20 text-emerald-400"
                 }`}
               >
-                {statusMessage.text}
+                {statusMessage}
               </div>
             )}
 
@@ -115,7 +112,6 @@ function Login() {
               </label>
               <div className="relative group mt-1">
                 <input
-                  ref={emailRef}
                   name="email"
                   type="email"
                   value={formData.email}
@@ -133,12 +129,6 @@ function Login() {
                 <label className="text-xs font-bold uppercase tracking-widest text-slate-500">
                   Password
                 </label>
-                {/* <Link
-                  to="/forgot"
-                  className="text-xs text-purple-400 hover:text-purple-300 transition-colors"
-                >
-                  Forgot?
-                </Link> */}
               </div>
               <div className="relative group mt-1">
                 <input
