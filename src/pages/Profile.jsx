@@ -13,6 +13,7 @@ import { BsCodeSlash } from "react-icons/bs";
 import { useSelector } from "react-redux";
 import SkillTags from "../components/SkillTags";
 import { useNavigate } from "react-router-dom";
+import Loading from "./Loading";
 
 function Profile() {
   const { user, checked } = useSelector((s) => s.user);
@@ -21,13 +22,7 @@ function Profile() {
   const navigate = useNavigate();
 
   // Handle loading or missing user state
-  if (!checked || !user) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-[#0B101B]">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-purple-500"></div>
-      </div>
-    );
-  }
+  if (!checked || !user) <Loading />;
 
   const { name, avatar, about, headline, location, skills, createdAt, social } =
     user;
@@ -52,7 +47,7 @@ function Profile() {
               <div className="w-40 h-40 rounded-full ring-4 ring-purple-500/20 p-1.5 bg-gradient-to-tr from-purple-500 to-pink-500">
                 <div className="w-full h-full rounded-full overflow-hidden bg-slate-900 border-4 border-[#0B101B]">
                   <img
-                    src={avatar || `https://ui-avatars.com/api/?name=${name}`}
+                    src={avatar}
                     alt="profile"
                     className="w-full h-full object-cover"
                   />
@@ -79,7 +74,7 @@ function Profile() {
                 </div>
                 <button
                   onClick={() => navigate("/profile-edit")}
-                  className="px-6 py-2.5 bg-white text-slate-900 hover:bg-purple-100 rounded-full font-bold transition-all flex items-center justify-center gap-2 transform active:scale-95 cursor-pointer"
+                  className="px-6 py-2.5 bg-white text-slate-900 hover:bg-purple-100 rounded-lg font-bold transition-all flex items-center justify-center gap-2 transform active:scale-95 cursor-pointer"
                 >
                   <FaEdit /> Edit Profile
                 </button>
@@ -118,7 +113,7 @@ function Profile() {
             {/* About Card */}
             <div className="bg-slate-900/40 border border-slate-800 rounded-2xl p-8 transition-all hover:bg-slate-900/60">
               <div className="flex items-center gap-3 mb-6">
-                <div className="p-2 bg-purple-500/10 rounded-2g">
+                <div className="p-2 bg-purple-500/10 rounded-lg">
                   <FaUser className="text-purple-500" />
                 </div>
                 <h3 className="text-xl font-bold text-white uppercase tracking-wider">
