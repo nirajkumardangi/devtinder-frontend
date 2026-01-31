@@ -1,4 +1,4 @@
-export const BASE_URL = "http://localhost:3000";
+export const BASE_URL = "/api";
 
 export const COLORS = [
   "bg-blue-600/30 text-blue-300 border-blue-700",
